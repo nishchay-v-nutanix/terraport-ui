@@ -1,12 +1,12 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import Welcome from '../pages/Welcome';
+import Landing from '../pages/Landing';
 
 export default function Routes(): React.ReactElement {
   return (
     <Switch>
-      <Route path="/" component={Welcome} />
+      <Route path="/" component={Landing} />
     </Switch>
   );
 }

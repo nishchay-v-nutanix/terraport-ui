@@ -22,6 +22,8 @@ import {
 } from '@nutanix-ui/prism-reactjs';
 ```
 
+ALways use color tokens from
+
 ## Component Categories
 
 ### 1. Core Action Components
@@ -71,6 +73,7 @@ import {
 ## Key Patterns & Rules
 
 ### Layout Patterns
+!IMPORTANT: Always use FlexLayout or StackingLayout instead of <div>
 ```jsx
 // Use FlexLayout for horizontal arrangements
 <FlexLayout justifyContent="space-between" alignItems="center" itemGap="S">

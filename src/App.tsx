@@ -1,13 +1,24 @@
 import React from 'react';
-import { Paragraph } from '@nutanix-ui/prism-reactjs';
+import { ThemeManager, ThemeWrapper } from '@nutanix-core/prism-ui-themes-common';
+import '@nutanix-core/prism-ui-themes-common/lib/definitions.css';
+import './App.css';
+
+import Landing from './pages/Landing';
 
 export default function App(): React.ReactElement {
+  const themeManager = ThemeManager.instance;
+  const newTheme = themeManager.getThemeById('dark');
+  themeManager.theme = newTheme;
+
   return (
-    <div style={{ padding: '20px' }}>
-      <Paragraph data-test-id="type-primary">
-        This is a single line paragraph text.
-        By design single line has 10px line height.
-      </Paragraph>
-    </div>
+    <ThemeWrapper
+      onThemeChange={() => {
+        return {
+          theme: newTheme,
+        };
+      }}
+    >
+      <Landing />
+    </ThemeWrapper>
   );
 }
