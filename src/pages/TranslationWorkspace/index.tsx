@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import {
   FlexLayout,
   StackingLayout,
@@ -158,6 +158,7 @@ function renderMapping(
 
 export default function TranslationWorkspace(): React.ReactElement {
   const { sessionId } = useParams<RouteParams>();
+  const history = useHistory();
 
   const {
     mappings,
@@ -178,7 +179,6 @@ export default function TranslationWorkspace(): React.ReactElement {
   }, [sessionId, hasUnsavedChanges]);
 
   const handleCommitTranslation = useCallback(() => {
-    // TODO: Implement commit functionality with confirmation modal
     const confirmed = window.confirm(
       `Are you sure you want to commit ${stats.readyToCommit} translations?\n\n` +
         `Total Resources: ${stats.totalResources}\n` +
@@ -188,9 +188,10 @@ export default function TranslationWorkspace(): React.ReactElement {
 
     if (confirmed) {
       console.log('Committing translations...', { sessionId });
-      alert('Translations committed successfully!');
+      // Navigate to IaC Generation Preview
+      history.push(`/preview/${sessionId}`);
     }
-  }, [sessionId, stats]);
+  }, [sessionId, stats, history]);
 
   const handleExport = useCallback(() => {
     // TODO: Implement export functionality
