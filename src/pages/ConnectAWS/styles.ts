@@ -7,6 +7,7 @@ export const PageContainer = styled.div`
   width: 100%;
   overflow: auto;
   padding: 40px 60px;
+  background: var(--color-background-body);
 `;
 
 export const ContentWrapper = styled.div`
@@ -33,7 +34,7 @@ export const Sidebar = styled.div`
 export const ProgressBarContainer = styled.div`
   width: 100%;
   height: 4px;
-  background: var(--color-background-base);
+  background: var(--color-background-alt);
   border-radius: 2px;
   overflow: hidden;
   margin-top: 16px;
@@ -42,7 +43,7 @@ export const ProgressBarContainer = styled.div`
 export const ProgressBarFill = styled.div<{ percent: number }>`
   height: 100%;
   width: ${props => props.percent}%;
-  background: linear-gradient(90deg, #3B82F6, #2563EB);
+  background: var(--color-background-interactive-primary);
   border-radius: 2px;
   transition: width 0.3s ease;
 `;
@@ -68,7 +69,7 @@ export const IconWrapper = styled.div<{ color?: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => props.color || 'var(--color-text-primary)'};
+  color: ${props => props.color || 'var(--color-text-primary-label)'};
 `;
 
 export const PermissionItem = styled.div`
@@ -79,7 +80,7 @@ export const PermissionItem = styled.div`
 `;
 
 export const CheckIcon = styled.span`
-  color: #10B981;
+  color: var(--color-text-success);
   font-size: 14px;
 `;
 
@@ -96,14 +97,14 @@ export const VisibilityToggle = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--color-text-secondary);
+  color: var(--color-text-secondary-label);
   padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
 
   &:hover {
-    color: var(--color-text-primary);
+    color: var(--color-text-primary-label);
   }
 `;
 
@@ -132,6 +133,12 @@ export const HelpCard = styled.div`
   transition: border-color 0.2s ease;
 
   &:hover {
-    border-color: var(--color-border-hover);
+    border-color: var(--color-border-interactive);
   }
+`;
+
+export const StepLabel = styled.span`
+  color: var(--color-text-link);
+  font-weight: 600;
+  font-size: 12px;
 `;

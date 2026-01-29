@@ -10,7 +10,6 @@ import {
   Select,
   Link,
 } from '@nutanix-ui/prism-reactjs';
-
 import {
   PageContainer,
   ContentWrapper,
@@ -28,6 +27,7 @@ import {
   ButtonContainer,
   HelpCard,
   IconWrapper,
+  StepLabel,
 } from './styles';
 import {
   AWSCredentials,
@@ -35,6 +35,13 @@ import {
   AWS_REGIONS,
   REQUIRED_PERMISSIONS,
 } from './types';
+
+// Select row data interface matching Prism Select component
+interface SelectRowData {
+  key?: string | number;
+  label: string;
+  disabled?: boolean;
+}
 
 export default function ConnectAWS(): React.ReactElement {
   const [credentials, setCredentials] = useState<AWSCredentials>({
@@ -60,12 +67,23 @@ export default function ConnectAWS(): React.ReactElement {
     }));
   };
 
-  const handleRegionChange = (value: string) => {
+  const handleRegionChange = (selectedRow: SelectRowData | undefined) => {
     setCredentials((prev) => ({
       ...prev,
-      defaultRegion: value,
+      defaultRegion: selectedRow?.key as string || '',
     }));
   };
+
+  // Convert AWS_REGIONS to Select rowsData format
+  const regionRowsData: SelectRowData[] = AWS_REGIONS.map((region) => ({
+    key: region.value,
+    label: region.label,
+  }));
+
+  // Get the selected region row
+  const selectedRegionRow = regionRowsData.find(
+    (row) => row.key === credentials.defaultRegion
+  );
 
   const handleTestConnection = async () => {
     setIsTestingConnection(true);
@@ -90,15 +108,12 @@ export default function ConnectAWS(): React.ReactElement {
   );
 
   const renderProgressSection = () => (
-    <StackingLayout itemGap="S" style={{ marginTop: 32 }}>
+    <StackingLayout itemGap="S" padding="30px-0px">
       <FlexLayout alignItems="center" justifyContent="space-between">
         <StackingLayout itemGap="none">
-          <TextLabel
-            type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}
-            style={{ color: '#3B82F6', fontWeight: 600, fontSize: 12 }}
-          >
+          <StepLabel>
             STEP {currentStep} OF {CONNECTION_STEPS.length}
-          </TextLabel>
+          </StepLabel>
           <Title size={Title.TitleSizes.H3}>{currentStepData.title}</Title>
         </StackingLayout>
         <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>
@@ -115,7 +130,7 @@ export default function ConnectAWS(): React.ReactElement {
     <FormCard>
       <StackingLayout itemGap="L">
         <FlexLayout alignItems="center" itemGap="S">
-          <IconWrapper color="#A78BFA">
+          <IconWrapper>
             <svg
               width="20"
               height="20"
@@ -142,7 +157,6 @@ export default function ConnectAWS(): React.ReactElement {
               value={credentials.accessKeyId}
               onChange={handleInputChange('accessKeyId')}
               placeholder="AKIAIOSFODNN7EXAMPLE"
-              style={{ paddingRight: 40 }}
             />
             <VisibilityToggle
               type="button"
@@ -195,7 +209,6 @@ export default function ConnectAWS(): React.ReactElement {
               value={credentials.secretAccessKey}
               onChange={handleInputChange('secretAccessKey')}
               placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-              style={{ paddingRight: 40 }}
             />
             <VisibilityToggle
               type="button"
@@ -238,16 +251,11 @@ export default function ConnectAWS(): React.ReactElement {
               Default Region
             </TextLabel>
             <Select
-              value={credentials.defaultRegion}
-              onChange={handleRegionChange}
+              rowsData={regionRowsData}
+              selectedRow={selectedRegionRow}
+              onSelectedChange={handleRegionChange}
               placeholder="Select a region"
-            >
-              {AWS_REGIONS.map((region) => (
-                <Select.Option key={region.value} value={region.value}>
-                  {region.label}
-                </Select.Option>
-              ))}
-            </Select>
+            />
           </StackingLayout>
           <StackingLayout itemGap="XS">
             <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
@@ -304,7 +312,7 @@ export default function ConnectAWS(): React.ReactElement {
       <InfoCard>
         <StackingLayout itemGap="M">
           <FlexLayout alignItems="center" itemGap="S">
-            <IconWrapper color="#10B981">
+            <IconWrapper color="var(--color-text-success)">
               <svg
                 width="20"
                 height="20"
@@ -322,7 +330,7 @@ export default function ConnectAWS(): React.ReactElement {
             </IconWrapper>
             <Title size={Title.TitleSizes.H4}>Permissions Required</Title>
           </FlexLayout>
-          <Paragraph type="secondary" size="small">
+          <Paragraph type="secondary">
             To successfully discover your infrastructure, the IAM user must have
             the following read-only permissions:
           </Paragraph>
@@ -346,7 +354,7 @@ export default function ConnectAWS(): React.ReactElement {
       <InfoCard>
         <StackingLayout itemGap="S">
           <FlexLayout alignItems="center" itemGap="S">
-            <IconWrapper color="#10B981">
+            <IconWrapper color="var(--color-text-success)">
               <svg
                 width="20"
                 height="20"
@@ -361,7 +369,7 @@ export default function ConnectAWS(): React.ReactElement {
             </IconWrapper>
             <Title size={Title.TitleSizes.H4}>End-to-End Encryption</Title>
           </FlexLayout>
-          <Paragraph type="secondary" size="small">
+          <Paragraph type="secondary">
             Your keys are encrypted using AES-256 before transmission and are
             never stored in plain text.
           </Paragraph>
