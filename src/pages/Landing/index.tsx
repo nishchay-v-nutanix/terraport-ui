@@ -24,6 +24,7 @@ import {
   EnvironmentsGrid,
   AddEnvironmentCard,
 } from './styles';
+import history from '../../routes/history';
 
 export default function Landing(): React.ReactElement {
   const [environments, setEnvironments] = useState<Environment[]>([]);
@@ -31,11 +32,15 @@ export default function Landing(): React.ReactElement {
   const hasEnvironments = environments.length > 0;
 
   const handleCreateMigration = () => {
-    console.log('Create migration clicked');
+    history.push('/connect-aws');
   };
 
   const handleConnectProvider = (providerId: string) => {
-    console.log('Connect provider:', providerId);
+    if (providerId === 'aws') {
+      history.push('/connect-aws');
+    } else {
+      console.log('Connect provider:', providerId);
+    }
   };
 
   const handleEnvironmentAction = (environmentId: string) => {
