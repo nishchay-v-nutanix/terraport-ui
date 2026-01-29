@@ -231,7 +231,7 @@ export default function ScanningEngine(): React.ReactElement {
         {isCompleted && (
           <Button
             type={Button.ButtonTypes.PRIMARY}
-            onClick={() => console.log('View Results')}
+            onClick={() => history.push(`/translation/${scanSession.id}`)}
           >
             View Results
           </Button>

@@ -105,7 +105,6 @@ export default function DiscoveryLog({
       border
       padding="20px"
       style={{
-        backgroundColor: 'var(--color-background-secondary)',
         maxHeight: '400px',
         overflow: 'hidden',
       }}
