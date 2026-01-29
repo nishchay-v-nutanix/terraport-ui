@@ -265,7 +265,7 @@ export default function TranslationWorkspace(): React.ReactElement {
               onClick={handleCommitTranslation}
               disabled={stats.readyToCommit === 0}
             >
-              <FlexLayout alignItems="center" itemGap="XS">
+              <FlexLayout alignItems="center" itemGap="XS" padding="0px-10px">
                 <TickCircleIcon style={{ width: '16px', height: '16px' }} />
                 Commit Translation
               </FlexLayout>

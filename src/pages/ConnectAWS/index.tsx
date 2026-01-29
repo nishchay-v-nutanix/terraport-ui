@@ -109,7 +109,7 @@ export default function ConnectAWS(): React.ReactElement {
   const renderProgressSection = () => (
     <StackingLayout itemGap="S" padding="20px-0px">
       <FlexLayout alignItems="center" justifyContent="space-between">
-        <StackingLayout itemGap="XS">
+        <StackingLayout itemGap="S">
           <TextLabel
             type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
             size={TextLabel.TEXT_LABEL_SIZE.SMALL}
@@ -234,7 +234,7 @@ export default function ConnectAWS(): React.ReactElement {
         {/* Action Buttons */}
         <FlexLayout
           alignItems="center"
-          justifyContent="flex-end"
+          justifyContent="space-between"
           itemGap="M"
           style={{
             marginTop: '20px',
@@ -256,8 +256,8 @@ export default function ConnectAWS(): React.ReactElement {
             type={Button.ButtonTypes.PRIMARY}
             onClick={handleSaveAndContinue}
           >
-            <FlexLayout alignItems="center" itemGap="XS">
-              Save & Continue
+            <FlexLayout alignItems="center" itemGap="XS" padding="0px-10px">
+              Start Scan
               <ChevronRightIcon />
             </FlexLayout>
           </Button>
@@ -279,7 +279,7 @@ export default function ConnectAWS(): React.ReactElement {
             To successfully discover your infrastructure, the IAM user must have
             the following read-only permissions:
           </Paragraph>
-          <StackingLayout itemGap="XS">
+          <StackingLayout itemGap="S">
             {REQUIRED_PERMISSIONS.map((permission) => (
               <FlexLayout key={permission} alignItems="center" itemGap="S">
                 <SuccessStatusIcon
@@ -321,7 +321,7 @@ export default function ConnectAWS(): React.ReactElement {
         <FlexLayout alignItems="center" justifyContent="space-between">
           <FlexLayout alignItems="center" itemGap="S">
             <QuestionIcon color="var(--color-text-secondary-label)" />
-            <StackingLayout itemGap="none">
+            <StackingLayout itemGap="S">
               <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
                 Need help?
               </TextLabel>
@@ -341,8 +341,8 @@ export default function ConnectAWS(): React.ReactElement {
 
   return (
     <ContainerLayout padding="40px">
-      <FlexLayout itemGap="XL">
-        <StackingLayout style={{ flex: 1, maxWidth: '720px' }}>
+      <FlexLayout itemGap="XL" justifyContent="space-between">
+        <StackingLayout style={{ flex: 1, maxWidth: '960px' }}>
           {renderHeader()}
           {renderProgressSection()}
           {renderCredentialsForm()}
