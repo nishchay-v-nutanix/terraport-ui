@@ -6,6 +6,7 @@ import './App.css';
 
 import Landing from './pages/Landing';
 import ConnectAWS from './pages/ConnectAWS';
+import ScanningEngine from './pages/ScanningEngine';
 import history from './routes/history';
 import { FlexLayout } from '@nutanix-ui/prism-reactjs';
 
@@ -41,6 +42,7 @@ export default function App(): React.ReactElement {
             <Switch>
               <Route exact path="/" component={Landing} />
               <Route path="/connect-aws" component={ConnectAWS} />
+              <Route path="/scan/:scanId" component={ScanningEngine} />
             </Switch>
           </FlexLayout>
         </Router>

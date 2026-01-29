@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   Button,
   FlexLayout,
@@ -38,6 +39,7 @@ interface SelectRowData {
 }
 
 export default function ConnectAWS(): React.ReactElement {
+  const history = useHistory();
   const [credentials, setCredentials] = useState<AWSCredentials>({
     accessKeyId: '',
     secretAccessKey: '',
@@ -89,6 +91,9 @@ export default function ConnectAWS(): React.ReactElement {
 
   const handleSaveAndContinue = () => {
     console.log('Saving credentials:', credentials);
+    // Generate a unique scan ID and navigate to the scanning screen
+    const scanId = `SCAN-${Date.now().toString(36).toUpperCase()}`;
+    history.push(`/scan/${scanId}`);
   };
 
   const renderHeader = () => (
