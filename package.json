@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@nutanix-core/prism-ui-themes-common": "^2.0.4",
     "@nutanix-ui/browserslist-config-prism": "^1.2.0",
     "@nutanix-ui/prism-reactjs": "^2.50.0",
     "react": "^18.3.1",
@@ -32,6 +33,13 @@
   },
   "devDependencies": {
     "@craco/craco": "^7.1.0",
-    "@nutanix-ui/babel-plugin-prism-import": "^1.4.0"
+    "@nutanix-ui/babel-plugin-prism-import": "^1.4.0",
+    "@types/history": "^4.7.11",
+    "@types/node": "^25.0.10",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/styled-components": "^5.1.36",
+    "typescript": "^5.9.3"
   }
 }
