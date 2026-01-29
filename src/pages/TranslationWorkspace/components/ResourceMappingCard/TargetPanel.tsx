@@ -100,7 +100,7 @@ export default function TargetPanel({
       <StackingLayout itemGap="S" style={{ flex: 2 }}>
         <FlexLayout alignItems="center" itemGap="S">
           {getResourceTypeIcon(undefined)}
-          <StackingLayout itemGap="none">
+          <StackingLayout itemGap="S">
             <Title size={Title.TitleSizes.H3}>No Match Found</Title>
             <TextLabel type={TextLabel.TEXT_LABEL_TYPE.WARNING}>
               {noMatchMessage}
@@ -117,7 +117,7 @@ export default function TargetPanel({
       {/* Header with icon and resource info */}
       <FlexLayout alignItems="center" itemGap="S">
         {getResourceTypeIcon(resourceType)}
-        <StackingLayout itemGap="none">
+        <StackingLayout itemGap="S">
           <FlexLayout alignItems="center" itemGap="XS">
             <Title size={Title.TitleSizes.H3}>{resourceName}</Title>
             <TextLabel
@@ -150,18 +150,20 @@ export default function TargetPanel({
             borderRadius: '4px',
           }}
         >
-          {configLines.map((line, index) => (
-            <TextLabel
-              key={index}
-              type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
-              style={{
-                display: 'block',
-                color: 'var(--color-text-secondary-label)',
-              }}
-            >
-              {line}
-            </TextLabel>
-          ))}
+          <StackingLayout itemGap="XS">
+            {configLines.map((line, index) => (
+              <TextLabel
+                key={index}
+                type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
+                style={{
+                  display: 'block',
+                  color: 'var(--color-text-secondary-label)',
+                }}
+              >
+                {line}
+              </TextLabel>
+            ))}
+          </StackingLayout>
         </ContainerLayout>
       )}
 

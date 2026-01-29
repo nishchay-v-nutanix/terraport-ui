@@ -90,7 +90,7 @@ export default function SourcePanel({
       {/* Header with icon and resource info */}
       <FlexLayout alignItems="center" itemGap="S">
         {getResourceTypeIcon(resourceType)}
-        <StackingLayout itemGap="none">
+        <StackingLayout itemGap="S">
           <FlexLayout alignItems="center" itemGap="XS">
             <Title size={Title.TitleSizes.H3}>{resourceId}</Title>
             <TextLabel
@@ -117,18 +117,20 @@ export default function SourcePanel({
             borderRadius: '4px',
           }}
         >
-          {configLines.map((line, index) => (
-            <TextLabel
-              key={index}
-              type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
-              style={{
-                display: 'block',
-                color: 'var(--color-text-secondary-label)',
-              }}
-            >
-              {line}
-            </TextLabel>
-          ))}
+          <StackingLayout itemGap="XS">
+            {configLines.map((line, index) => (
+              <TextLabel
+                key={index}
+                type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
+                style={{
+                  display: 'block',
+                  color: 'var(--color-text-secondary-label)',
+                }}
+              >
+                {line}
+              </TextLabel>
+            ))}
+          </StackingLayout>
         </ContainerLayout>
       )}
     </StackingLayout>
