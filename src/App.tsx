@@ -4,6 +4,7 @@ import '@nutanix-core/prism-ui-themes-common/lib/definitions.css';
 import './App.css';
 
 import Landing from './pages/Landing';
+import { FlexLayout } from '@nutanix-ui/prism-reactjs';
 
 export default function App(): React.ReactElement {
   const themeManager = ThemeManager.instance;
@@ -18,7 +19,9 @@ export default function App(): React.ReactElement {
         };
       }}
     >
-      <Landing />
+      <FlexLayout background='alt' style={{ height: '100vh', width: '100vw' }}>
+        <Landing />
+      </FlexLayout>
     </ThemeWrapper>
   );
 }
