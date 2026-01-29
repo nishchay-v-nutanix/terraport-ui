@@ -1,0 +1,343 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Prism UI React Components Library - Cursor AI IDE Rules
+
+## Overview
+This file contains rules and guidelines for working with the Nutanix Prism UI React Components Library v2. Use these rules to provide accurate code suggestions and follow best practices.
+
+## Import Statements
+
+Always import components from the main package:
+```jsx
+import {
+  Button,
+  Input,
+  Modal,
+  Table,
+  FlexLayout,
+  StackingLayout
+} from '@nutanix-ui/prism-reactjs';
+```
+
+## Component Categories
+
+### 1. Core Action Components
+- **Button**: Primary interactive element with multiple types (PRIMARY, SECONDARY, DESTRUCTIVE, etc.)
+- **ButtonGroup**: Container for grouped button actions
+
+### 2. Input & Display Components
+- **Input**: Text input with appearances (normal, inline, borderless, nested)
+- **Checkbox**: Boolean selection with indeterminate support
+- **Radio/RadioGroup**: Single selection from multiple options
+- **Select/MultiSelect**: Dropdown selection components
+- **TextArea**: Multi-line text input
+- **Alert**: Status messages (INFO, SUCCESS, WARNING, ERROR)
+- **Badge**: Count or status indicators
+- **StatusIcon**: Visual status indicators
+- **Progress**: Progress bars with different states
+- **Loader**: Loading spinners and overlays
+
+### 3. Layout Components
+- **FlexLayout**: Flexible box layout with gap controls
+- **StackingLayout**: Vertical stacking with consistent spacing
+- **FlexItem**: Individual flex item configuration
+
+### 4. Modal & Overlay Components
+- **Modal**: Standard modal dialogs
+- **ConfirmModal**: Confirmation dialogs
+- **FullPageModal**: Full-screen modal experiences
+- **Popover**: Contextual popup content
+
+### 5. Navigation Components
+- **Menu/MenuItem/MenuGroup**: Navigation menus with collapsible groups
+- **Breadcrumb/BreadcrumbItem**: Breadcrumb navigation
+- **Steps**: Step-by-step progress indicators
+- **Pagination**: Table and list pagination
+
+### 6. Table Components
+- **Table**: Full-featured data tables with sorting, selection, pagination
+- **LocalTable**: Client-side data management table
+- **WidgetTable**: Compact tables for widgets
+
+### 7. Typography Components
+- **Link**: Styled links with multiple types (primary, secondary, delete, etc.)
+- **Paragraph**: Text paragraphs with hierarchy (primary, secondary, supplementary)
+- **TextLabel**: Labels and captions with semantic colors
+- **Title**: Heading elements (h1-h4) with proper styling
+
+## Key Patterns & Rules
+
+### Layout Patterns
+```jsx
+// Use FlexLayout for horizontal arrangements
+<FlexLayout justifyContent="space-between" alignItems="center" itemGap="S">
+  <Title size="h2">Page Title</Title>
+  <Button>Action</Button>
+</FlexLayout>
+
+// Use StackingLayout for vertical arrangements
+<StackingLayout itemGap="M">
+  <Input placeholder="Name" />
+  <Input placeholder="Email" />
+  <Button>Submit</Button>
+</StackingLayout>
+```
+
+### Button Usage Rules
+- Use `Button.ButtonTypes.PRIMARY` for main actions
+- Use `Button.ButtonTypes.SECONDARY` for secondary actions
+- Use `Button.ButtonTypes.DESTRUCTIVE` for delete/remove actions
+- Always provide `aria-label` for icon-only buttons
+- Use `disabled` or `aria-disabled` for disabled states
+
+```jsx
+<Button type={Button.ButtonTypes.PRIMARY}>Save</Button>
+<Button type={Button.ButtonTypes.SECONDARY}>Cancel</Button>
+<Button type={Button.ButtonTypes.DESTRUCTIVE}>Delete</Button>
+<Button type={Button.ButtonTypes.ICON_DEFAULT} aria-label="Settings">
+  <SettingsIcon />
+</Button>
+```
+
+### Input Component Rules
+- Always provide `placeholder` for user guidance
+- Use `error` prop with `errorType` for validation states
+- Use `search` prop for search inputs
+- Provide `prefix`/`suffix` for enhanced inputs
+
+```jsx
+<Input
+  placeholder="Enter email address"
+  error={hasError}
+  errorType={Input.ErrorType.CRITICAL}
+  search={isSearchField}
+  prefix={<EmailIcon />}
+/>
+```
+
+### Modal Usage Rules
+- Always provide `title` and `onClose` handler
+- Use `ConfirmModal` for destructive actions
+- Use `FullPageModal` for complex workflows
+- Ensure proper keyboard navigation (closeOnEscape)
+
+```jsx
+<Modal
+  visible={isOpen}
+  title="Edit User"
+  onClose={() => setIsOpen(false)}
+  footer={
+    <FlexLayout justifyContent="flex-end" itemGap="S">
+      <Button type={Button.ButtonTypes.SECONDARY} onClick={() => setIsOpen(false)}>
+        Cancel
+      </Button>
+      <Button onClick={handleSave}>Save</Button>
+    </FlexLayout>
+  }
+>
+  {/* Modal content */}
+</Modal>
+```
+
+### Table Usage Rules
+- Always provide `rowKey` for performance
+- Use `columns` array with proper `title` and `key`
+- Include `aria-label` for accessibility
+- Use `LocalTable` for client-side sorting/pagination
+- Use `WidgetTable` for compact displays
+
+```jsx
+<Table
+  columns={[
+    { title: 'Name', key: 'name' },
+    { title: 'Email', key: 'email' },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_, record) => (
+        <Button size="small" onClick={() => edit(record)}>Edit</Button>
+      )
+    }
+  ]}
+  dataSource={data}
+  rowKey="id"
+  aria-label="Users table"
+/>
+```
+
+### Gap and Spacing Rules
+- Use `itemGap` prop for consistent spacing in FlexLayout and StackingLayout
+- Available gap sizes: 'none', 'XS', 'S', 'M', 'L', 'XL', 'XXL'
+- Prefer semantic gap sizes over custom margins
+
+```jsx
+<FlexLayout itemGap="S">  {/* 10px gap */}
+<StackingLayout itemGap="M">  {/* 15px gap */}
+```
+
+### Typography Hierarchy Rules
+- Use Title components (h1-h4) for headings
+- Use Paragraph with types: primary, secondary, supplementary
+- Use TextLabel for form labels and captions
+- Use Link with appropriate types for navigation
+
+```jsx
+<StackingLayout>
+  <Title size="h1">Main Title</Title>
+  <Paragraph type="primary">Main content</Paragraph>
+  <Paragraph type="secondary">Supporting information</Paragraph>
+  <TextLabel type="primary">Form Label</TextLabel>
+</StackingLayout>
+```
+
+## Accessibility Requirements
+
+### Always Include
+- `aria-label` for icon-only buttons and interactive elements
+- `aria-describedby` for error messages and help text
+- Proper heading hierarchy (h1 → h2 → h3 → h4)
+- `rowKey` for tables and lists
+- Focus management for modals
+
+### Form Accessibility
+```jsx
+<div>
+  <TextLabel id="email-label">Email Address</TextLabel>
+  <Input
+    aria-labelledby="email-label"
+    aria-describedby={hasError ? "email-error" : undefined}
+    error={hasError}
+  />
+  {hasError && (
+    <TextLabel id="email-error" type="error">
+      Please enter a valid email address
+    </TextLabel>
+  )}
+</div>
+```
+
+## Common Anti-Patterns to Avoid
+
+### DON'T
+- Use inline styles instead of className when possible
+- Mix layout components incorrectly (FlexLayout inside StackingLayout without purpose)
+- Forget `rowKey` on Table components
+- Use Button without proper type specification
+- Create custom spacing instead of using itemGap
+- Use generic onClick handlers without accessibility considerations
+
+### DO
+- Use semantic HTML elements when possible
+- Provide proper ARIA labels
+- Use consistent gap sizes throughout the application
+- Follow component prop conventions
+- Use appropriate component types for semantic meaning
+
+## Error Handling Patterns
+
+```jsx
+// Input validation
+<Input
+  error={!!errors.email}
+  errorType={Input.ErrorType.CRITICAL}
+  builtInSuffix={{
+    type: Input.InputBuildInSuffix.FAILED,
+    failMessage: errors.email
+  }}
+/>
+
+// Alert messages
+<Alert
+  type={Alert.AlertTypes.ERROR}
+  message="Failed to save changes"
+  showCloseIcon={true}
+  onClose={() => clearError()}
+/>
+
+// Loading states
+<Table
+  loading={isLoading ? Table.LOADING_TYPE.INLINE : false}
+  loadingError={hasError}
+  customMessages={{
+    loadingError: 'Failed to load data. Please try again.'
+  }}
+/>
+```
+
+## Performance Considerations
+
+- Use `LocalTable` for datasets under 1000 items
+- Implement pagination for large datasets
+- Use `rowKey` for efficient table rendering
+- Consider `unmountOnClose` for heavy modal content
+- Use proper React keys for dynamic lists
+
+## Component Combinations
+
+### Form Layouts
+```jsx
+<StackingLayout itemGap="M">
+  <FlexLayout alignItems="flex-end" itemGap="S">
+    <div style={{ flex: 1 }}>
+      <TextLabel>Name</TextLabel>
+      <Input placeholder="Enter name" />
+    </div>
+    <Button type={Button.ButtonTypes.ICON_DEFAULT} aria-label="Clear">
+      <ClearIcon />
+    </Button>
+  </FlexLayout>
+</StackingLayout>
+```
+
+### Data Display
+```jsx
+<StackingLayout>
+  <FlexLayout justifyContent="space-between" alignItems="center">
+    <Title size="h2">Users</Title>
+    <Button type={Button.ButtonTypes.PRIMARY}>Add User</Button>
+  </FlexLayout>
+  <Table columns={columns} dataSource={data} rowKey="id" />
+</StackingLayout>
+```
+
+### Modal Forms
+```jsx
+<Modal
+  visible={visible}
+  title="Create Item"
+  onClose={onClose}
+>
+  <StackingLayout itemGap="M">
+    <div>
+      <TextLabel>Name</TextLabel>
+      <Input placeholder="Enter name" />
+    </div>
+    <div>
+      <TextLabel>Description</TextLabel>
+      <TextArea placeholder="Enter description" />
+    </div>
+  </StackingLayout>
+</Modal>
+```
+
+## State Management Patterns
+
+### Controlled Components
+```jsx
+const [value, setValue] = useState('');
+const [checked, setChecked] = useState(false);
+const [selected, setSelected] = useState([]);
+
+return (
+  <StackingLayout>
+    <Input value={value} onChange={(e) => setValue(e.target.value)} />
+    <Checkbox checked={checked} onChange={setChecked}>Option</Checkbox>
+    <MultiSelect value={selected} onChange={setSelected}>
+      <MultiSelect.Option value="1">Option 1</MultiSelect.Option>
+    </MultiSelect>
+  </StackingLayout>
+);
+```
