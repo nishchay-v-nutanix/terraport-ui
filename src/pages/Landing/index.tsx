@@ -9,6 +9,7 @@ import {
   Link,
   Input,
   ContainerLayout,
+  PlusIcon,
 } from '@nutanix-ui/prism-reactjs';
 
 import {
@@ -20,7 +21,6 @@ import EmptyState from './components/EmptyState';
 import EnvironmentCard from './components/EnvironmentCard';
 import StatsOverview from './components/StatsOverview';
 import {
-  PageContainer,
   EnvironmentsGrid,
   AddEnvironmentCard,
 } from './styles';
@@ -65,6 +65,7 @@ export default function Landing(): React.ReactElement {
         <FlexLayout flexGrow="1" style={{ maxWidth: 480 }}>
           <Input
             placeholder="Search environments, pipelines, or logs..."
+            search
             style={{ width: '100%' }}
           />
         </FlexLayout>
@@ -73,8 +74,8 @@ export default function Landing(): React.ReactElement {
             type={Button.ButtonTypes.PRIMARY}
             onClick={hasEnvironments ? handleCreateMigration : toggleDemoMode}
           >
-            <FlexLayout alignItems="center" itemGap="XS" padding="0px-15px">
-              <span>+</span>
+            <FlexLayout alignItems="center" itemGap="XS">
+              <PlusIcon />
               Create New Migration
             </FlexLayout>
           </Button>
@@ -85,7 +86,7 @@ export default function Landing(): React.ReactElement {
 
   if (!hasEnvironments) {
     return (
-      <PageContainer>
+      <FlexLayout flexDirection="column" style={{ minHeight: '100%', width: '100%' }}>
         {renderHeader()}
         <ContainerLayout padding="40px">
           <EmptyState
@@ -93,12 +94,12 @@ export default function Landing(): React.ReactElement {
             onConnectProvider={handleConnectProvider}
           />
         </ContainerLayout>
-      </PageContainer>
+      </FlexLayout>
     );
   }
 
   return (
-    <PageContainer>
+    <FlexLayout flexDirection="column" style={{ minHeight: '100%', width: '100%' }}>
       {renderHeader()}
       <ContainerLayout padding="40px">
         <StackingLayout itemGap="XL">
@@ -130,12 +131,7 @@ export default function Landing(): React.ReactElement {
             ))}
             <AddEnvironmentCard onClick={handleAddEnvironment}>
               <StackingLayout itemGap="S" style={{ alignItems: 'center' }}>
-                <TextLabel
-                  type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
-                  size={TextLabel.TEXT_LABEL_SIZE.MEDIUM}
-                >
-                  +
-                </TextLabel>
+                <PlusIcon color="var(--color-text-secondary-label)" />
                 <Title size={Title.TitleSizes.H4}>Add New Environment</Title>
                 <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>
                   Configure a custom source-target path
@@ -153,6 +149,6 @@ export default function Landing(): React.ReactElement {
           </Button>
         </StackingLayout>
       </ContainerLayout>
-    </PageContainer>
+    </FlexLayout>
   );
 }

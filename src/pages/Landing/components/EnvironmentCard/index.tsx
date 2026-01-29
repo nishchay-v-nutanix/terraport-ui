@@ -9,6 +9,7 @@ import {
   Progress,
   TextLabel,
   ContainerLayout,
+  ChevronRightIcon,
 } from '@nutanix-ui/prism-reactjs';
 
 import { Environment, CloudProvider } from '../../types';
@@ -92,7 +93,7 @@ export default function EnvironmentCard({
         <Button type={Button.ButtonTypes.SECONDARY} onClick={onAction}>
           <FlexLayout alignItems="center" itemGap="XS">
             Manage
-            <span>›</span>
+            <ChevronRightIcon />
           </FlexLayout>
         </Button>
       </FlexLayout>
@@ -156,7 +157,7 @@ export default function EnvironmentCard({
               color={Badge.BadgeColorTypes.GRAY}
               type={Badge.BadgeTypes.TAG}
             />
-            <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>→</TextLabel>
+            <ChevronRightIcon color="var(--color-text-secondary-label)" />
             <Badge
               count="NTNX"
               color={Badge.BadgeColorTypes.BLUE}

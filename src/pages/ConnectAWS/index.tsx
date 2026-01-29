@@ -9,26 +9,20 @@ import {
   Input,
   Select,
   Link,
+  Progress,
+  ContainerLayout,
+  // Prism Icons
+  LockIcon,
+  SecureIcon,
+  RefreshIcon,
+  QuestionIcon,
+  ShowIcon,
+  HideIcon,
+  ChevronRightIcon,
+  SuccessStatusIcon,
+  InformationStatusIcon,
 } from '@nutanix-ui/prism-reactjs';
-import {
-  PageContainer,
-  ContentWrapper,
-  MainContent,
-  Sidebar,
-  ProgressBarContainer,
-  ProgressBarFill,
-  FormCard,
-  InfoCard,
-  PermissionItem,
-  CheckIcon,
-  InputWrapper,
-  VisibilityToggle,
-  FormRow,
-  ButtonContainer,
-  HelpCard,
-  IconWrapper,
-  StepLabel,
-} from './styles';
+
 import {
   AWSCredentials,
   CONNECTION_STEPS,
@@ -70,7 +64,7 @@ export default function ConnectAWS(): React.ReactElement {
   const handleRegionChange = (selectedRow: SelectRowData | undefined) => {
     setCredentials((prev) => ({
       ...prev,
-      defaultRegion: selectedRow?.key as string || '',
+      defaultRegion: (selectedRow?.key as string) || '',
     }));
   };
 
@@ -100,49 +94,48 @@ export default function ConnectAWS(): React.ReactElement {
   const renderHeader = () => (
     <StackingLayout itemGap="S">
       <Title size={Title.TitleSizes.H1}>Connect AWS Environment</Title>
-      <Paragraph type="secondary">
+      <Paragraph type="secondary" forceMultiLineHeight>
         Enter your IAM credentials to allow Terraport to discover your AWS
-        infrastructure. This corresponds to Module A: Connection & Discovery.
+        infrastructure.
       </Paragraph>
     </StackingLayout>
   );
 
   const renderProgressSection = () => (
-    <StackingLayout itemGap="S" padding="30px-0px">
+    <StackingLayout itemGap="S" padding="20px-0px">
       <FlexLayout alignItems="center" justifyContent="space-between">
-        <StackingLayout itemGap="none">
-          <StepLabel>
+        <StackingLayout itemGap="XS">
+          <TextLabel
+            type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
+            size={TextLabel.TEXT_LABEL_SIZE.SMALL}
+            style={{
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              color: 'var(--color-text-link)',
+              fontWeight: 600,
+            }}
+          >
             STEP {currentStep} OF {CONNECTION_STEPS.length}
-          </StepLabel>
+          </TextLabel>
           <Title size={Title.TitleSizes.H3}>{currentStepData.title}</Title>
         </StackingLayout>
         <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>
           {progressPercent}% Completed
         </TextLabel>
       </FlexLayout>
-      <ProgressBarContainer>
-        <ProgressBarFill percent={progressPercent} />
-      </ProgressBarContainer>
+      <Progress
+        percent={progressPercent}
+        status={Progress.ProgressStatus.ACTIVE}
+        label={false}
+      />
     </StackingLayout>
   );
 
   const renderCredentialsForm = () => (
-    <FormCard>
+    <ContainerLayout border padding="30px" style={{ marginTop: '20px' }}>
       <StackingLayout itemGap="L">
         <FlexLayout alignItems="center" itemGap="S">
-          <IconWrapper>
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-          </IconWrapper>
+          <LockIcon color="var(--color-text-primary-label)" />
           <Title size={Title.TitleSizes.H4}>AWS Credentials</Title>
         </FlexLayout>
 
@@ -151,45 +144,27 @@ export default function ConnectAWS(): React.ReactElement {
           <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
             Access Key ID
           </TextLabel>
-          <InputWrapper>
+          <FlexLayout alignItems="center" style={{ position: 'relative' }}>
             <Input
               type={showAccessKey ? 'text' : 'password'}
               value={credentials.accessKeyId}
               onChange={handleInputChange('accessKeyId')}
               placeholder="AKIAIOSFODNN7EXAMPLE"
+              style={{ paddingRight: '40px' }}
             />
-            <VisibilityToggle
-              type="button"
+            <Button
+              type={Button.ButtonTypes.ICON_DEFAULT}
               onClick={() => setShowAccessKey(!showAccessKey)}
               aria-label={showAccessKey ? 'Hide access key' : 'Show access key'}
+              style={{
+                position: 'absolute',
+                right: '4px',
+                background: 'transparent',
+              }}
             >
-              {showAccessKey ? (
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                  <line x1="1" y1="1" x2="23" y2="23" />
-                </svg>
-              ) : (
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              )}
-            </VisibilityToggle>
-          </InputWrapper>
+              {showAccessKey ? <HideIcon /> : <ShowIcon />}
+            </Button>
+          </FlexLayout>
           <TextLabel
             type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
             size={TextLabel.TEXT_LABEL_SIZE.SMALL}
@@ -203,50 +178,32 @@ export default function ConnectAWS(): React.ReactElement {
           <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
             Secret Access Key
           </TextLabel>
-          <InputWrapper>
+          <FlexLayout alignItems="center" style={{ position: 'relative' }}>
             <Input
               type={showSecretKey ? 'text' : 'password'}
               value={credentials.secretAccessKey}
               onChange={handleInputChange('secretAccessKey')}
               placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+              style={{ paddingRight: '40px' }}
             />
-            <VisibilityToggle
-              type="button"
+            <Button
+              type={Button.ButtonTypes.ICON_DEFAULT}
               onClick={() => setShowSecretKey(!showSecretKey)}
               aria-label={showSecretKey ? 'Hide secret key' : 'Show secret key'}
+              style={{
+                position: 'absolute',
+                right: '4px',
+                background: 'transparent',
+              }}
             >
-              {showSecretKey ? (
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                  <line x1="1" y1="1" x2="23" y2="23" />
-                </svg>
-              ) : (
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              )}
-            </VisibilityToggle>
-          </InputWrapper>
+              {showSecretKey ? <HideIcon /> : <ShowIcon />}
+            </Button>
+          </FlexLayout>
         </StackingLayout>
 
         {/* Region and Account Alias Row */}
-        <FormRow>
-          <StackingLayout itemGap="XS">
+        <FlexLayout itemGap="L">
+          <StackingLayout itemGap="XS" style={{ flex: 1 }}>
             <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
               Default Region
             </TextLabel>
@@ -257,7 +214,7 @@ export default function ConnectAWS(): React.ReactElement {
               placeholder="Select a region"
             />
           </StackingLayout>
-          <StackingLayout itemGap="XS">
+          <StackingLayout itemGap="XS" style={{ flex: 1 }}>
             <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
               Account Alias (Optional)
             </TextLabel>
@@ -267,28 +224,26 @@ export default function ConnectAWS(): React.ReactElement {
               placeholder="e.g. Production AWS"
             />
           </StackingLayout>
-        </FormRow>
+        </FlexLayout>
 
         {/* Action Buttons */}
-        <ButtonContainer>
+        <FlexLayout
+          alignItems="center"
+          justifyContent="flex-end"
+          itemGap="M"
+          style={{
+            marginTop: '20px',
+            paddingTop: '20px',
+            borderTop: '1px solid var(--color-border-separator)',
+          }}
+        >
           <Button
             type={Button.ButtonTypes.SECONDARY}
             onClick={handleTestConnection}
             disabled={isTestingConnection}
           >
             <FlexLayout alignItems="center" itemGap="XS">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M23 4v6h-6" />
-                <path d="M1 20v-6h6" />
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-              </svg>
+              <RefreshIcon />
               {isTestingConnection ? 'Testing...' : 'Test Connection'}
             </FlexLayout>
           </Button>
@@ -298,128 +253,97 @@ export default function ConnectAWS(): React.ReactElement {
           >
             <FlexLayout alignItems="center" itemGap="XS">
               Save & Continue
-              <span>→</span>
+              <ChevronRightIcon />
             </FlexLayout>
           </Button>
-        </ButtonContainer>
+        </FlexLayout>
       </StackingLayout>
-    </FormCard>
+    </ContainerLayout>
   );
 
   const renderSidebar = () => (
-    <Sidebar>
+    <StackingLayout itemGap="M" style={{ width: '360px', flexShrink: 0 }}>
       {/* Permissions Required Card */}
-      <InfoCard>
+      <ContainerLayout border padding="20px">
         <StackingLayout itemGap="M">
           <FlexLayout alignItems="center" itemGap="S">
-            <IconWrapper color="var(--color-text-success)">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path
-                  d="M12 8v4M12 16h.01"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </IconWrapper>
+            <InformationStatusIcon color="var(--color-text-success)" />
             <Title size={Title.TitleSizes.H4}>Permissions Required</Title>
           </FlexLayout>
-          <Paragraph type="secondary">
+          <Paragraph type="secondary" forceMultiLineHeight>
             To successfully discover your infrastructure, the IAM user must have
             the following read-only permissions:
           </Paragraph>
           <StackingLayout itemGap="XS">
             {REQUIRED_PERMISSIONS.map((permission) => (
-              <PermissionItem key={permission}>
-                <CheckIcon>✓</CheckIcon>
+              <FlexLayout key={permission} alignItems="center" itemGap="S">
+                <SuccessStatusIcon
+                  color="var(--color-text-success)"
+                  iconColor="var(--color-background-base)"
+                />
                 <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
                   {permission}
                 </TextLabel>
-              </PermissionItem>
+              </FlexLayout>
             ))}
           </StackingLayout>
           <Link type="forward" href="#policy">
             View Full IAM Policy
           </Link>
         </StackingLayout>
-      </InfoCard>
+      </ContainerLayout>
 
       {/* End-to-End Encryption Card */}
-      <InfoCard>
+      <ContainerLayout border padding="20px">
         <StackingLayout itemGap="S">
           <FlexLayout alignItems="center" itemGap="S">
-            <IconWrapper color="var(--color-text-success)">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
-            </IconWrapper>
+            <SecureIcon color="var(--color-text-success)" />
             <Title size={Title.TitleSizes.H4}>End-to-End Encryption</Title>
           </FlexLayout>
-          <Paragraph type="secondary">
+          <Paragraph type="secondary" forceMultiLineHeight>
             Your keys are encrypted using AES-256 before transmission and are
             never stored in plain text.
           </Paragraph>
         </StackingLayout>
-      </InfoCard>
+      </ContainerLayout>
 
       {/* Need Help Card */}
-      <HelpCard>
-        <FlexLayout alignItems="center" itemGap="S">
-          <IconWrapper>
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
-          </IconWrapper>
-          <StackingLayout itemGap="none">
-            <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
-              Need help?
-            </TextLabel>
-            <TextLabel
-              type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
-              size={TextLabel.TEXT_LABEL_SIZE.SMALL}
-            >
-              Contact Support
-            </TextLabel>
-          </StackingLayout>
+      <ContainerLayout
+        border
+        padding="15px"
+        style={{ cursor: 'pointer' }}
+      >
+        <FlexLayout alignItems="center" justifyContent="space-between">
+          <FlexLayout alignItems="center" itemGap="S">
+            <QuestionIcon color="var(--color-text-secondary-label)" />
+            <StackingLayout itemGap="none">
+              <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
+                Need help?
+              </TextLabel>
+              <TextLabel
+                type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
+                size={TextLabel.TEXT_LABEL_SIZE.SMALL}
+              >
+                Contact Support
+              </TextLabel>
+            </StackingLayout>
+          </FlexLayout>
+          <ChevronRightIcon color="var(--color-text-secondary-label)" />
         </FlexLayout>
-        <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>›</TextLabel>
-      </HelpCard>
-    </Sidebar>
+      </ContainerLayout>
+    </StackingLayout>
   );
 
   return (
-    <PageContainer>
-      <ContentWrapper>
-        <MainContent>
+    <ContainerLayout padding="40px">
+      <FlexLayout itemGap="XL">
+        <StackingLayout style={{ flex: 1, maxWidth: '720px' }}>
           {renderHeader()}
           {renderProgressSection()}
           {renderCredentialsForm()}
-        </MainContent>
+        </StackingLayout>
         {renderSidebar()}
-      </ContentWrapper>
-    </PageContainer>
+      </FlexLayout>
+    </ContainerLayout>
   );
 }

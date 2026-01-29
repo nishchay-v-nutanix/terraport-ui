@@ -1,14 +1,6 @@
 import styled from 'styled-components';
 
-// Minimal styled-components - only for layout-specific needs not covered by Prism
-export const PageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  width: 100%;
-  overflow: auto;
-`;
-
+// Minimal styled-components - only for grid layout not directly supported by Prism
 export const EnvironmentsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -32,13 +24,13 @@ export const AddEnvironmentCard = styled.div`
   padding: 40px 20px;
   background: var(--color-background-alt);
   border: 1px solid var(--color-border-separator);
-  border-radius: var(--border-radius-m);
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   min-height: 240px;
 
   &:hover {
-    border-color: var(--color-border-hover);
+    border-color: var(--color-border-interactive);
     background: var(--color-background-base);
   }
 `;

@@ -22,19 +22,28 @@ export default function App(): React.ReactElement {
         };
       }}
     >
-            <FlexLayout background='alt'>
-      <Router history={history}>
-        <div style={{
-          height: '100vh',
-          width: '100vw',
-          overflow: 'auto',
-        }}>
-          <Switch>
-            <Route exact path="/" component={Landing} />
-            <Route path="/connect-aws" component={ConnectAWS} />
-          </Switch>
-        </div>
-      </Router>
+      <FlexLayout
+        background="alt"
+        style={{
+          minHeight: '100vh',
+          width: '100%',
+        }}
+      >
+        <Router history={history}>
+          <FlexLayout
+            flexDirection="column"
+            style={{
+              flex: 1,
+              width: '100%',
+              overflow: 'auto',
+            }}
+          >
+            <Switch>
+              <Route exact path="/" component={Landing} />
+              <Route path="/connect-aws" component={ConnectAWS} />
+            </Switch>
+          </FlexLayout>
+        </Router>
       </FlexLayout>
     </ThemeWrapper>
   );

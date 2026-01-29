@@ -7,6 +7,7 @@ import {
   Paragraph,
   Badge,
   ContainerLayout,
+  ChevronRightIcon,
 } from '@nutanix-ui/prism-reactjs';
 
 import { CloudProviderInfo } from '../../types';
@@ -59,7 +60,7 @@ export default function CloudProviderCard({
         >
           <FlexLayout alignItems="center" justifyContent="center" itemGap="XS">
             Connect
-            <span>→</span>
+            <ChevronRightIcon />
           </FlexLayout>
         </Button>
       </StackingLayout>

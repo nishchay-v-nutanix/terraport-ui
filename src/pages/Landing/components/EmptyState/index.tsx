@@ -8,6 +8,7 @@ import {
   Link,
   TextLabel,
   Divider,
+  PlusIcon,
 } from '@nutanix-ui/prism-reactjs';
 
 import { CLOUD_PROVIDERS, CloudProviderInfo } from '../../types';
@@ -42,7 +43,7 @@ export default function EmptyState({
           onClick={onCreateMigration}
         >
           <FlexLayout alignItems="center" itemGap="XS">
-            <span>+</span>
+            <PlusIcon />
             Create Your First Migration
           </FlexLayout>
         </Button>
