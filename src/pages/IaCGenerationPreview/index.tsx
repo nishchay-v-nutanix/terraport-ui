@@ -327,7 +327,7 @@ export default function IaCGenerationPreview(): React.ReactElement {
 
   // Handle back navigation
   const handleBack = useCallback(() => {
-    history.push(`/translation/${sessionId}`);
+    history.push(`/security/${sessionId}`);
   }, [history, sessionId]);
 
   // Handle escape key for fullscreen
@@ -449,7 +449,7 @@ export default function IaCGenerationPreview(): React.ReactElement {
       </ContainerLayout>
 
       {/* Need Help Box - fixed at bottom right */}
-      <NeedHelpBox />
+      {/* <NeedHelpBox /> */}
 
       {/* Step Footer */}
       <StepFooter

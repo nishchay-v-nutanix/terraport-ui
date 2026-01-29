@@ -8,6 +8,7 @@ import Landing from './pages/Landing';
 import ConnectAWS from './pages/ConnectAWS';
 import ScanningEngine from './pages/ScanningEngine';
 import TranslationWorkspace from './pages/TranslationWorkspace';
+import SecurityIssues from './pages/SecurityIssues';
 import IaCGenerationPreview from './pages/IaCGenerationPreview';
 import history from './routes/history';
 import { FlexLayout } from '@nutanix-ui/prism-reactjs';
@@ -46,6 +47,7 @@ export default function App(): React.ReactElement {
               <Route path="/connect-aws" component={ConnectAWS} />
               <Route path="/scan/:scanId" component={ScanningEngine} />
               <Route path="/translation/:sessionId" component={TranslationWorkspace} />
+              <Route path="/security/:sessionId" component={SecurityIssues} />
               <Route path="/preview/:sessionId" component={IaCGenerationPreview} />
             </Switch>
           </FlexLayout>

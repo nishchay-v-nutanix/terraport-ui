@@ -285,7 +285,7 @@ export default function TranslationWorkspace(): React.ReactElement {
   const handleCompleteReview = useCallback(() => {
     console.log('Completing review...', { sessionId });
     // Navigate to IaC Preview (step 5)
-    history.push(`/security-issues/${sessionId}`);
+    history.push(`/security/${sessionId}`);
   }, [sessionId, history]);
 
   const handleBack = useCallback(() => {
@@ -381,16 +381,6 @@ export default function TranslationWorkspace(): React.ReactElement {
 
                 {/* Summary Footer */}
                 <FlexLayout justifyContent="flex-start" alignItems="center" style={{ marginTop: '20px' }}>
-                  {/* Approved Mappings Card */}
-                  <ContainerLayout
-                    border
-                    padding="15px"
-                    style={{
-                      background: 'var(--color-background-base)',
-                      display: 'inline-block',
-                    }}
-                  >
-                  </ContainerLayout>
                 </FlexLayout>
               </StackingLayout>
             </StackingLayout>

@@ -626,35 +626,6 @@ export default function SecurityIssues(): React.ReactElement {
                   alignItems="center"
                   style={{ marginTop: '20px' }}
                 >
-                  {/* Acknowledged Count Card */}
-                  <ContainerLayout
-                    border
-                    padding="15px"
-                    style={{
-                      background: 'var(--color-background-base)',
-                      display: 'inline-block',
-                    }}
-                  >
-                    <FlexLayout alignItems="center" itemGap="M">
-                      <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
-                        Acknowledged Issues
-                      </TextLabel>
-                      <Title size={Title.TitleSizes.H3}>
-                        {stats.acknowledgedCount} of {stats.totalIssues}
-                      </Title>
-                    </FlexLayout>
-                  </ContainerLayout>
-
-                  {/* Review & Deploy Button */}
-                  <Button
-                    type={Button.ButtonTypes.PRIMARY}
-                    onClick={handleNext}
-                  >
-                    <FlexLayout alignItems="center" itemGap="XS" padding="0px-10px">
-                      Review & Deploy
-                      <ChevronRightIcon />
-                    </FlexLayout>
-                  </Button>
                 </FlexLayout>
               </StackingLayout>
             </StackingLayout>
@@ -663,15 +634,23 @@ export default function SecurityIssues(): React.ReactElement {
       </ContainerLayout>
 
       {/* Need Help Box - fixed at bottom right */}
-      <NeedHelpBox />
+      {/* <NeedHelpBox /> */}
 
       {/* Step Footer */}
       <StepFooter
         currentStep={currentStep}
         totalSteps={CONNECTION_STEPS.length}
-        nextLabel="Review & Deploy"
+        nextLabel="Generate Config"
         onNext={handleNext}
         onBack={handleBack}
+        extraContent={<FlexLayout alignItems="center" itemGap="M">
+          <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
+            Acknowledged Issues
+          </TextLabel>
+          <Title size={Title.TitleSizes.H3}>
+            {stats.acknowledgedCount} of {stats.totalIssues}
+          </Title>
+        </FlexLayout>}
       />
     </FlexLayout>
   );
