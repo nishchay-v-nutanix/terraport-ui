@@ -17,7 +17,7 @@ export default function FileExplorer({
 }: FileExplorerProps): React.ReactElement {
   return (
     <ExplorerContainer>
-      <StackingLayout padding="15px" itemGap="S">
+      <StackingLayout padding="15px" itemGap="M">
         <TextLabel
           type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
           size={TextLabel.TEXT_LABEL_SIZE.SMALL}
@@ -30,7 +30,7 @@ export default function FileExplorer({
           EXPLORER
         </TextLabel>
 
-        <StackingLayout itemGap="none" role="listbox" aria-label="File explorer">
+        <StackingLayout itemGap="S" role="listbox" aria-label="File explorer">
           {files.map((file) => (
             <FileItem
               key={file.id}

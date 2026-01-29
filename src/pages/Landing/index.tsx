@@ -74,7 +74,7 @@ export default function Landing(): React.ReactElement {
             type={Button.ButtonTypes.PRIMARY}
             onClick={hasEnvironments ? handleCreateMigration : toggleDemoMode}
           >
-            <FlexLayout alignItems="center" itemGap="XS">
+            <FlexLayout alignItems="center" itemGap="XS" padding="0px-10px">
               <PlusIcon />
               Create New Migration
             </FlexLayout>
@@ -87,7 +87,6 @@ export default function Landing(): React.ReactElement {
   if (!hasEnvironments) {
     return (
       <FlexLayout flexDirection="column" style={{ minHeight: '100%', width: '100%' }}>
-        {renderHeader()}
         <ContainerLayout padding="40px">
           <EmptyState
             onCreateMigration={handleCreateMigration}

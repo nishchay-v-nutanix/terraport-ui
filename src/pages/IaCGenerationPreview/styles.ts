@@ -51,7 +51,7 @@ export const TabContainer = styled.div<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 8px !important;
   border-right: 1px solid var(--color-border-separator);
   background-color: ${({ $isActive }) =>
     $isActive ? 'var(--color-background-white)' : 'transparent'};

@@ -40,7 +40,6 @@ export default function TabBar({
           aria-selected={tab.isActive}
           tabIndex={tab.isActive ? 0 : -1}
         >
-          <CodeIcon style={{ width: '14px', height: '14px', flexShrink: 0 }} />
           <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
             {tab.fileName}
           </TextLabel>

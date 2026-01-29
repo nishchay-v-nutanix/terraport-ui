@@ -246,7 +246,7 @@ export default function IaCGenerationPreview(): React.ReactElement {
             onClick={handleExport}
             disabled={state.isExporting}
           >
-            <FlexLayout alignItems="center" itemGap="XS">
+            <FlexLayout alignItems="center" itemGap="XS" padding="0px-10px">
               <CloudIcon style={{ width: '16px', height: '16px' }} />
               {state.isExporting ? 'Exporting...' : 'Export to Nutanix Cloud Manager'}
             </FlexLayout>

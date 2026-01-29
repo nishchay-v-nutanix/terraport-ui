@@ -42,7 +42,7 @@ export default function EmptyState({
           type={Button.ButtonTypes.PRIMARY}
           onClick={onCreateMigration}
         >
-          <FlexLayout alignItems="center" itemGap="XS">
+          <FlexLayout alignItems="center" itemGap="XS" padding="0px-10px">
             <PlusIcon />
             Create Your First Migration
           </FlexLayout>

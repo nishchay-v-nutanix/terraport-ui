@@ -179,7 +179,7 @@ export default function ScanningEngine(): React.ReactElement {
   const renderHeader = () => (
     <FlexLayout justifyContent="space-between" alignItems="center">
       <FlexLayout alignItems="center" itemGap="M">
-        <StackingLayout itemGap="XS">
+        <StackingLayout itemGap="S">
           <FlexLayout alignItems="center" itemGap="M">
             <Title size={Title.TitleSizes.H1}>
               Scanning Engine: AWS {scanSession.region}
@@ -215,13 +215,13 @@ export default function ScanningEngine(): React.ReactElement {
               type={Button.ButtonTypes.SECONDARY}
               onClick={isPaused ? handleResume : handlePause}
             >
-              <FlexLayout alignItems="center" itemGap="XS">
+              <FlexLayout alignItems="center" itemGap="XS" padding="0px-10px">
                 {isPaused ? <PlayIcon /> : <PauseIcon />}
                 {isPaused ? 'Resume' : 'Pause'}
               </FlexLayout>
             </Button>
             <Button type={Button.ButtonTypes.DESTRUCTIVE} onClick={handleAbort}>
-              <FlexLayout alignItems="center" itemGap="XS">
+              <FlexLayout alignItems="center" itemGap="XS" padding="0px-10px">
                 <CloseIcon />
                 Abort Scan
               </FlexLayout>

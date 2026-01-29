@@ -41,7 +41,7 @@ export default function FileItem({
       />
       <TextLabel
         type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}
-        style={{ color: 'var(--color-text-inverse)' }}
+        size={TextLabel.TEXT_LABEL_SIZE.MEDIUM}
       >
         {file.name}
       </TextLabel>
