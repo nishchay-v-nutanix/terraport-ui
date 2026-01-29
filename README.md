@@ -1,6 +1,6 @@
 # Terraport UI
 
-A React-based UI for Terraport - AWS infrastructure visualization and Terraform code generation.
+A React-based UI for Terraport
 
 ## Prerequisites
 
