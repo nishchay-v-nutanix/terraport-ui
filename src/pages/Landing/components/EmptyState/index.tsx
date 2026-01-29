@@ -62,7 +62,7 @@ export default function EmptyState({
           size={TextLabel.TEXT_LABEL_SIZE.SMALL}
           style={{ whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: 1.5 }}
         >
-          Or start by connecting a provider
+          Supported Providers
         </TextLabel>
         <Divider />
       </FlexLayout>
@@ -73,7 +73,6 @@ export default function EmptyState({
           <CloudProviderCard
             key={provider.id}
             provider={provider}
-            onConnect={() => onConnectProvider(provider.id)}
           />
         ))}
       </ProvidersGrid>

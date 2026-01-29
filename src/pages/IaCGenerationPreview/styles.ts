@@ -82,8 +82,23 @@ export const StatusBarContainer = styled.div`
 
 export const MainContentArea = styled.div`
   display: flex;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 520px);
+  min-height: 300px;
   border: 1px solid var(--color-border-separator);
   border-radius: 4px;
   overflow: hidden;
+`;
+
+export const FooterBar = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 16px 40px !important;
+  background-color: var(--color-background-base);
+  border-top: 1px solid var(--color-border-separator);
+  z-index: 100;
 `;

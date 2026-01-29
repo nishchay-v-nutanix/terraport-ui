@@ -5,6 +5,7 @@ import {
   FlexLayout,
   StackingLayout,
   Title,
+  Paragraph,
   TextLabel,
   Progress,
   ContainerLayout,
@@ -15,11 +16,119 @@ import {
   SuccessStatusIcon,
   AlertTriangleIcon,
   RefreshIcon,
+  QuestionIcon,
+  ChevronRightIcon,
 } from '@nutanix-ui/prism-reactjs';
 
 import StatsCard from './components/StatsCard';
 import DiscoveryLog from './components/DiscoveryLog';
 import { ScanSession, ScanStats, ScanProgress, LogEntry } from './types';
+import { CONNECTION_STEPS } from '../ConnectAWS/types';
+import StepFooter, { STEP_FOOTER_HEIGHT } from '../../components/StepFooter';
+
+// Title Bar Component - persists across all wizard steps
+interface TitleBarProps {
+  title: string;
+}
+
+const TitleBar: React.FC<TitleBarProps> = ({ title }) => (
+  <ContainerLayout
+    padding="20px"
+    style={{
+      paddingLeft: '40px',
+      paddingRight: '40px',
+      borderBottom: '1px solid var(--color-border-separator)',
+      background: 'var(--color-background-base)',
+    }}
+  >
+    <Title size={Title.TitleSizes.H2}>{title}</Title>
+  </ContainerLayout>
+);
+
+// Wizard Progress Component - persists across all wizard steps
+interface WizardProgressProps {
+  currentStep: number;
+  totalSteps: number;
+  stepTitle: string;
+  description: string;
+}
+
+const WizardProgress: React.FC<WizardProgressProps> = ({
+  currentStep,
+  totalSteps,
+  stepTitle,
+  description,
+}) => {
+  const progressPercent = (currentStep / totalSteps) * 100;
+
+  return (
+    <StackingLayout itemGap="M" padding="0px">
+      <FlexLayout alignItems="center" justifyContent="space-between">
+        <StackingLayout itemGap="S">
+          <TextLabel
+            type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
+            size={TextLabel.TEXT_LABEL_SIZE.SMALL}
+            style={{
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              color: 'var(--color-text-link)',
+              fontWeight: 600,
+            }}
+          >
+            STEP {currentStep} OF {totalSteps}
+          </TextLabel>
+          <Title size={Title.TitleSizes.H3}>{stepTitle}</Title>
+        </StackingLayout>
+        <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>
+          {progressPercent}% Completed
+        </TextLabel>
+      </FlexLayout>
+      <Progress
+        percent={progressPercent}
+        status={Progress.ProgressStatus.ACTIVE}
+        label={false}
+      />
+      <Paragraph type="secondary" forceMultiLineHeight>
+        {description}
+      </Paragraph>
+    </StackingLayout>
+  );
+};
+
+// Need Help Component - positioned above the footer
+const NeedHelpBox: React.FC = () => (
+  <ContainerLayout
+    border
+    padding="15px"
+    style={{
+      cursor: 'pointer',
+      position: 'fixed',
+      bottom: '84px',
+      right: '24px',
+      width: '280px',
+      background: 'var(--color-background-base)',
+      zIndex: 100,
+    }}
+  >
+    <FlexLayout alignItems="center" justifyContent="space-between">
+      <FlexLayout alignItems="center" itemGap="S">
+        <QuestionIcon color="var(--color-text-secondary-label)" />
+        <StackingLayout itemGap="S">
+          <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
+            Need help?
+          </TextLabel>
+          <TextLabel
+            type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
+            size={TextLabel.TEXT_LABEL_SIZE.SMALL}
+          >
+            Contact Support
+          </TextLabel>
+        </StackingLayout>
+      </FlexLayout>
+      <ChevronRightIcon color="var(--color-text-secondary-label)" />
+    </FlexLayout>
+  </ContainerLayout>
+);
 
 // Initial mock data
 const initialSession: ScanSession = {
@@ -176,7 +285,11 @@ export default function ScanningEngine(): React.ReactElement {
   const isActive = scanSession.status === 'active';
   const isCompleted = scanSession.status === 'completed';
 
-  const renderHeader = () => (
+  // Step 2 data
+  const currentStep = 2;
+  const currentStepData = CONNECTION_STEPS[currentStep - 1];
+
+  const renderScanHeader = () => (
     <FlexLayout justifyContent="space-between" alignItems="center">
       <FlexLayout alignItems="center" itemGap="M">
         <StackingLayout itemGap="S">
@@ -227,14 +340,6 @@ export default function ScanningEngine(): React.ReactElement {
               </FlexLayout>
             </Button>
           </>
-        )}
-        {isCompleted && (
-          <Button
-            type={Button.ButtonTypes.PRIMARY}
-            onClick={() => history.push(`/translation/${scanSession.id}`)}
-          >
-            View Results
-          </Button>
         )}
       </FlexLayout>
     </FlexLayout>
@@ -305,14 +410,58 @@ export default function ScanningEngine(): React.ReactElement {
     </ContainerLayout>
   );
 
-  return (
-    <ContainerLayout padding="40px">
+  const renderScanContent = () => (
+    <ContainerLayout border padding="30px" style={{ marginTop: '20px' }}>
       <StackingLayout itemGap="L">
-        {renderHeader()}
+        {renderScanHeader()}
         {renderStatsCards()}
         {renderProgressSection()}
         <DiscoveryLog entries={logEntries} isLive={isActive} />
       </StackingLayout>
     </ContainerLayout>
+  );
+
+  const handleBack = useCallback(() => {
+    history.push('/connect-aws');
+  }, [history]);
+
+  const handleNext = useCallback(() => {
+    history.push(`/translation/${scanSession.id}`);
+  }, [history, scanSession.id]);
+
+  return (
+    <FlexLayout flexDirection="column" style={{ minHeight: '100vh', width: '100%', paddingBottom: `${STEP_FOOTER_HEIGHT}px` }}>
+      {/* Title Bar - persists across all wizard steps */}
+      <TitleBar title="Migrate AWS Environment" />
+
+      {/* Main Content Area */}
+      <ContainerLayout padding="40px" style={{ flex: 1 }}>
+        <StackingLayout style={{ maxWidth: '900px', margin: '0 auto' }}>
+          {/* Wizard Progress - persists across all wizard steps */}
+          <WizardProgress
+            currentStep={currentStep}
+            totalSteps={CONNECTION_STEPS.length}
+            stepTitle={currentStepData.title}
+            description={currentStepData.description}
+          />
+
+          {/* Step Content - changes per step */}
+          {renderScanContent()}
+        </StackingLayout>
+      </ContainerLayout>
+
+      {/* Need Help Box - fixed at bottom right */}
+      <NeedHelpBox />
+
+      {/* Step Footer */}
+      <StepFooter
+        currentStep={currentStep}
+        totalSteps={CONNECTION_STEPS.length}
+        nextLabel={isCompleted ? 'Review Mappings' : 'Scanning...'}
+        onNext={handleNext}
+        onBack={handleBack}
+        isNextDisabled={!isCompleted}
+      />
+    </FlexLayout>
   );
 }

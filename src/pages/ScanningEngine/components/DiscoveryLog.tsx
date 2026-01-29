@@ -105,7 +105,7 @@ export default function DiscoveryLog({
       border
       padding="20px"
       style={{
-        maxHeight: '400px',
+        height: '400px',
         overflow: 'hidden',
       }}
     >

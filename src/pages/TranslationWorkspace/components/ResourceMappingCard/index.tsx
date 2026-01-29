@@ -5,8 +5,6 @@ import {
   Button,
   ChevronRightIcon,
   CrossCircleIcon,
-  TickCircleIcon,
-  CloseIcon,
   EditIcon,
 } from '@nutanix-ui/prism-reactjs';
 import { TranslationStatus } from '../../types';
@@ -108,19 +106,17 @@ export default function ResourceMappingCard({
                 type={Button.ButtonTypes.PRIMARY}
                 aria-label={`Approve mapping ${id}`}
                 onClick={onApprove}
-                style={{ padding: '6px 10px', minWidth: 'auto' }}
               >
-                <TickCircleIcon style={{ width: '16px', height: '16px' }} />
+                Approve
               </Button>
             )}
-            {status !== 'rejected' && onReject && (
+            {status === 'approved' && (
               <Button
-                type={Button.ButtonTypes.SECONDARY}
-                aria-label={`Reject mapping ${id}`}
-                onClick={onReject}
-                style={{ padding: '6px 10px', minWidth: 'auto' }}
+                type={Button.ButtonTypes.PRIMARY}
+                disabled
+                style={{ opacity: 0.6 }}
               >
-                <CloseIcon style={{ width: '16px', height: '16px' }} />
+                Approved
               </Button>
             )}
             {onEdit && (

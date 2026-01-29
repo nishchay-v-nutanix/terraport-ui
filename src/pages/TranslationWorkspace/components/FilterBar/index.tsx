@@ -4,28 +4,22 @@ import {
   Input,
   Button,
   ButtonGroup,
-  FilterIcon,
-  DownloadIcon,
 } from '@nutanix-ui/prism-reactjs';
-import { ResourceFilterType } from '../../types';
-import { FILTER_TABS } from '../../constants';
+import { ConfidenceFilterType } from '../../types';
+import { CONFIDENCE_FILTER_TABS } from '../../constants';
 
 interface FilterBarProps {
   searchQuery: string;
-  activeFilter: ResourceFilterType;
+  activeConfidenceTab: ConfidenceFilterType;
   onSearchChange: (query: string) => void;
-  onFilterChange: (filter: ResourceFilterType) => void;
-  onExport?: () => void;
-  onAdvancedFilter?: () => void;
+  onConfidenceTabChange: (tab: ConfidenceFilterType) => void;
 }
 
 export default function FilterBar({
   searchQuery,
-  activeFilter,
+  activeConfidenceTab,
   onSearchChange,
-  onFilterChange,
-  onExport,
-  onAdvancedFilter,
+  onConfidenceTabChange,
 }: FilterBarProps): React.ReactElement {
   return (
     <FlexLayout
@@ -33,7 +27,24 @@ export default function FilterBar({
       alignItems="center"
       itemGap="L"
     >
-      {/* Search Input */}
+      {/* Left side: Confidence Filter Tabs */}
+      <ButtonGroup>
+        {CONFIDENCE_FILTER_TABS.map((tab) => (
+          <Button
+            key={tab.key}
+            type={
+              activeConfidenceTab === tab.key
+                ? Button.ButtonTypes.PRIMARY
+                : Button.ButtonTypes.SECONDARY
+            }
+            onClick={() => onConfidenceTabChange(tab.key as ConfidenceFilterType)}
+          >
+            {tab.label}
+          </Button>
+        ))}
+      </ButtonGroup>
+
+      {/* Right side: Search */}
       <Input
         search={true}
         placeholder="Search by ID, CIDR, or Tag..."
@@ -41,52 +52,8 @@ export default function FilterBar({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           onSearchChange(e.target.value)
         }
-        style={{ width: '400px' }}
+        style={{ width: '300px' }}
       />
-
-      {/* Right side: Filter tabs + Actions */}
-      <FlexLayout alignItems="center" itemGap="L">
-        {/* Filter Tabs */}
-        <ButtonGroup>
-          {FILTER_TABS.map((tab) => (
-            <Button
-              key={tab.key}
-              type={
-                activeFilter === tab.key
-                  ? Button.ButtonTypes.PRIMARY
-                  : Button.ButtonTypes.SECONDARY
-              }
-              onClick={() => onFilterChange(tab.key as ResourceFilterType)}
-            >
-              {tab.label}
-            </Button>
-          ))}
-        </ButtonGroup>
-
-        {/* Action Buttons */}
-        <FlexLayout alignItems="center" itemGap="S">
-          <Button
-            type={Button.ButtonTypes.SECONDARY}
-            onClick={onAdvancedFilter}
-            aria-label="Advanced filters"
-          >
-            <FlexLayout alignItems="center" itemGap="XS">
-              <FilterIcon style={{ width: '16px', height: '16px' }} />
-              Filter
-            </FlexLayout>
-          </Button>
-          <Button
-            type={Button.ButtonTypes.SECONDARY}
-            onClick={onExport}
-            aria-label="Export mappings"
-          >
-            <FlexLayout alignItems="center" itemGap="XS">
-              <DownloadIcon style={{ width: '16px', height: '16px' }} />
-              Export
-            </FlexLayout>
-          </Button>
-        </FlexLayout>
-      </FlexLayout>
     </FlexLayout>
   );
 }

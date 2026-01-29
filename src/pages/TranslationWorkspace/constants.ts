@@ -253,6 +253,14 @@ export const FILTER_TABS = [
   { key: 'ebs', label: 'EBS' },
 ] as const;
 
+export const CONFIDENCE_FILTER_TABS = [
+  { key: 'all', label: 'All' },
+  { key: 'high', label: 'High' },
+  { key: 'medium', label: 'Medium' },
+  { key: 'low', label: 'Low' },
+  { key: 'unmapped', label: 'Unmapped' },
+] as const;
+
 export const REGION_DISPLAY_NAMES: Record<string, string> = {
   'us-east-1': 'US East (N. Virginia)',
   'us-east-2': 'US East (Ohio)',

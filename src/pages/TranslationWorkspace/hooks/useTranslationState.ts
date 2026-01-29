@@ -5,6 +5,7 @@ import {
   FilterState,
   ConfidenceLevel,
   ResourceFilterType,
+  ConfidenceFilterType,
 } from '../types';
 
 interface UseTranslationStateReturn {
@@ -20,6 +21,7 @@ interface UseTranslationStateReturn {
   setSearchQuery: (query: string) => void;
   setFilterType: (type: ResourceFilterType) => void;
   setConfidenceFilter: (confidence: ConfidenceLevel | 'all') => void;
+  setConfidenceTabFilter: (tab: ConfidenceFilterType) => void;
   resetFilters: () => void;
 }
 
@@ -28,6 +30,7 @@ const initialFilter: FilterState = {
   searchQuery: '',
   showOnlyNeedsReview: false,
   confidenceFilter: 'all',
+  confidenceTabFilter: 'all',
 };
 
 export function useTranslationState(
@@ -39,10 +42,12 @@ export function useTranslationState(
 
   // Computed stats
   const stats = useMemo((): TranslationStats => {
+    const approvedCount = mappings.filter((m) => m.status === 'approved').length;
     return {
       totalResources: mappings.length,
       needsReview: mappings.filter((m) => m.needsReview).length,
-      readyToCommit: mappings.filter((m) => m.status === 'approved').length,
+      readyToCommit: approvedCount,
+      approvedCount,
     };
   }, [mappings]);
 
@@ -76,6 +81,21 @@ export function useTranslationState(
         mapping.confidence !== filter.confidenceFilter
       ) {
         return false;
+      }
+
+      // Filter by confidence tab (All, High, Medium, Low, Unmapped)
+      if (filter.confidenceTabFilter !== 'all') {
+        if (filter.confidenceTabFilter === 'unmapped') {
+          // Unmapped = no target or manual confidence
+          if (mapping.target !== null && mapping.confidence !== 'manual') {
+            return false;
+          }
+        } else {
+          // Filter by specific confidence level
+          if (mapping.confidence !== filter.confidenceTabFilter) {
+            return false;
+          }
+        }
       }
 
       // Filter by needs review
@@ -147,6 +167,13 @@ export function useTranslationState(
     []
   );
 
+  const setConfidenceTabFilter = useCallback(
+    (tab: ConfidenceFilterType) => {
+      setFilter((prev) => ({ ...prev, confidenceTabFilter: tab }));
+    },
+    []
+  );
+
   const resetFilters = useCallback(() => {
     setFilter(initialFilter);
   }, []);
@@ -164,6 +191,7 @@ export function useTranslationState(
     setSearchQuery,
     setFilterType,
     setConfidenceFilter,
+    setConfidenceTabFilter,
     resetFilters,
   };
 }

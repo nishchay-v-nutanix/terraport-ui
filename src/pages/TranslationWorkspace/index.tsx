@@ -8,8 +8,9 @@ import {
   Button,
   TextLabel,
   ContainerLayout,
-  SaveIcon,
-  TickCircleIcon,
+  Progress,
+  QuestionIcon,
+  ChevronRightIcon,
 } from '@nutanix-ui/prism-reactjs';
 
 import { useTranslationState } from './hooks/useTranslationState';
@@ -20,8 +21,10 @@ import {
   SecurityGroupMapping as SGMappingType,
   SubnetMapping as SubnetMappingType,
   EC2Mapping as EC2MappingType,
-  ResourceFilterType,
+  ConfidenceFilterType,
 } from './types';
+import { CONNECTION_STEPS } from '../ConnectAWS/types';
+import StepFooter, { STEP_FOOTER_HEIGHT } from '../../components/StepFooter';
 
 // Components
 import StatsOverview from './components/StatsOverview';
@@ -34,6 +37,110 @@ import EC2Mapping from './components/EC2Mapping';
 interface RouteParams {
   sessionId: string;
 }
+
+// Title Bar Component - persists across all wizard steps
+interface TitleBarProps {
+  title: string;
+}
+
+const TitleBar: React.FC<TitleBarProps> = ({ title }) => (
+  <ContainerLayout
+    padding="20px"
+    style={{
+      paddingLeft: '40px',
+      paddingRight: '40px',
+      borderBottom: '1px solid var(--color-border-separator)',
+      background: 'var(--color-background-base)',
+    }}
+  >
+    <Title size={Title.TitleSizes.H2}>{title}</Title>
+  </ContainerLayout>
+);
+
+// Wizard Progress Component - persists across all wizard steps
+interface WizardProgressProps {
+  currentStep: number;
+  totalSteps: number;
+  stepTitle: string;
+  description: string;
+}
+
+const WizardProgress: React.FC<WizardProgressProps> = ({
+  currentStep,
+  totalSteps,
+  stepTitle,
+  description,
+}) => {
+  const progressPercent = (currentStep / totalSteps) * 100;
+
+  return (
+    <StackingLayout itemGap="M" padding="0px">
+      <FlexLayout alignItems="center" justifyContent="space-between">
+        <StackingLayout itemGap="S">
+          <TextLabel
+            type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
+            size={TextLabel.TEXT_LABEL_SIZE.SMALL}
+            style={{
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              color: 'var(--color-text-link)',
+              fontWeight: 600,
+            }}
+          >
+            STEP {currentStep} OF {totalSteps}
+          </TextLabel>
+          <Title size={Title.TitleSizes.H3}>{stepTitle}</Title>
+        </StackingLayout>
+        <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>
+          {progressPercent}% Completed
+        </TextLabel>
+      </FlexLayout>
+      <Progress
+        percent={progressPercent}
+        status={Progress.ProgressStatus.ACTIVE}
+        label={false}
+      />
+      <Paragraph type="secondary" forceMultiLineHeight>
+        {description}
+      </Paragraph>
+    </StackingLayout>
+  );
+};
+
+// Need Help Component - positioned above the footer
+const NeedHelpBox: React.FC = () => (
+  <ContainerLayout
+    border
+    padding="15px"
+    style={{
+      cursor: 'pointer',
+      position: 'fixed',
+      bottom: '84px',
+      right: '24px',
+      width: '280px',
+      background: 'var(--color-background-base)',
+      zIndex: 100,
+    }}
+  >
+    <FlexLayout alignItems="center" justifyContent="space-between">
+      <FlexLayout alignItems="center" itemGap="S">
+        <QuestionIcon color="var(--color-text-secondary-label)" />
+        <StackingLayout itemGap="S">
+          <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
+            Need help?
+          </TextLabel>
+          <TextLabel
+            type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
+            size={TextLabel.TEXT_LABEL_SIZE.SMALL}
+          >
+            Contact Support
+          </TextLabel>
+        </StackingLayout>
+      </FlexLayout>
+      <ChevronRightIcon color="var(--color-text-secondary-label)" />
+    </FlexLayout>
+  </ContainerLayout>
+);
 
 // Column Headers Component
 function ColumnHeaders(): React.ReactElement {
@@ -164,46 +271,26 @@ export default function TranslationWorkspace(): React.ReactElement {
     mappings,
     stats,
     filter,
-    hasUnsavedChanges,
     approveMapping,
     rejectMapping,
     setSearchQuery,
-    setFilterType,
+    setConfidenceTabFilter,
   } = useTranslationState(MOCK_MAPPINGS);
 
+  // Step 3 data
+  const currentStep = 3;
+  const currentStepData = CONNECTION_STEPS[currentStep - 1];
+
   // Handlers
-  const handleSaveDraft = useCallback(() => {
-    // TODO: Implement save draft functionality
-    console.log('Saving draft...', { sessionId, hasUnsavedChanges });
-    alert('Draft saved successfully!');
-  }, [sessionId, hasUnsavedChanges]);
+  const handleCompleteReview = useCallback(() => {
+    console.log('Completing review...', { sessionId });
+    // Navigate to IaC Preview (step 5)
+    history.push(`/security-issues/${sessionId}`);
+  }, [sessionId, history]);
 
-  const handleCommitTranslation = useCallback(() => {
-    const confirmed = window.confirm(
-      `Are you sure you want to commit ${stats.readyToCommit} translations?\n\n` +
-        `Total Resources: ${stats.totalResources}\n` +
-        `Ready to Commit: ${stats.readyToCommit}\n` +
-        `Needs Review: ${stats.needsReview}`
-    );
-
-    if (confirmed) {
-      console.log('Committing translations...', { sessionId });
-      // Navigate to IaC Generation Preview
-      history.push(`/preview/${sessionId}`);
-    }
-  }, [sessionId, stats, history]);
-
-  const handleExport = useCallback(() => {
-    // TODO: Implement export functionality
-    console.log('Exporting mappings...');
-    alert('Export functionality coming soon!');
-  }, []);
-
-  const handleAdvancedFilter = useCallback(() => {
-    // TODO: Implement advanced filter modal
-    console.log('Opening advanced filter...');
-    alert('Advanced filter coming soon!');
-  }, []);
+  const handleBack = useCallback(() => {
+    history.push(`/scan/${sessionId}`);
+  }, [sessionId, history]);
 
   const handleVLANSelect = useCallback(
     (mappingId: string, vlanKey: string) => {
@@ -239,84 +326,97 @@ export default function TranslationWorkspace(): React.ReactElement {
   };
 
   return (
-    <ContainerLayout padding="40px">
-      <StackingLayout itemGap="L">
-        {/* Header */}
-        <FlexLayout justifyContent="space-between" alignItems="flex-start">
-          <StackingLayout itemGap="XS">
-            <Title size={Title.TitleSizes.H1}>Translation Workspace</Title>
-            <Paragraph type="secondary" forceMultiLineHeight>
-              Mapping AWS VPC infrastructure to Nutanix Prism Central.
-              Review AI suggestions before committing.
-            </Paragraph>
-          </StackingLayout>
-          <FlexLayout itemGap="S">
-            <Button
-              type={Button.ButtonTypes.SECONDARY}
-              onClick={handleSaveDraft}
-              disabled={!hasUnsavedChanges}
-            >
-              <FlexLayout alignItems="center" itemGap="XS">
-                <SaveIcon style={{ width: '16px', height: '16px' }} />
-                Save Draft
-              </FlexLayout>
-            </Button>
-            <Button
-              type={Button.ButtonTypes.PRIMARY}
-              onClick={handleCommitTranslation}
-              disabled={stats.readyToCommit === 0}
-            >
-              <FlexLayout alignItems="center" itemGap="XS" padding="0px-10px">
-                <TickCircleIcon style={{ width: '16px', height: '16px' }} />
-                Commit Translation
-              </FlexLayout>
-            </Button>
-          </FlexLayout>
-        </FlexLayout>
+    <FlexLayout flexDirection="column" style={{ minHeight: '100vh', width: '100%', paddingBottom: `${STEP_FOOTER_HEIGHT}px` }}>
+      {/* Title Bar - persists across all wizard steps */}
+      <TitleBar title="Migrate AWS Environment" />
 
-        {/* Stats Overview */}
-        <StatsOverview stats={stats} />
+      {/* Main Content Area */}
+      <ContainerLayout padding="40px" style={{ flex: 1 }}>
+        <StackingLayout style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          {/* Wizard Progress - persists across all wizard steps */}
+          <WizardProgress
+            currentStep={currentStep}
+            totalSteps={CONNECTION_STEPS.length}
+            stepTitle={currentStepData.title}
+            description={currentStepData.description}
+          />
 
-        {/* Filter Bar */}
-        <FilterBar
-          searchQuery={filter.searchQuery}
-          activeFilter={filter.type}
-          onSearchChange={setSearchQuery}
-          onFilterChange={setFilterType}
-          onExport={handleExport}
-          onAdvancedFilter={handleAdvancedFilter}
-        />
+          {/* Main Content Container */}
+          <ContainerLayout border padding="30px" style={{ marginTop: '20px' }}>
+            <StackingLayout itemGap="L">
+              {/* Stats Overview */}
+              {/* <StatsOverview stats={stats} /> */}
 
-        {/* Column Headers */}
-        <ColumnHeaders />
+              {/* Mapped Configurations by Confidence Rating Section */}
+              <StackingLayout itemGap="M">
+                <Title size={Title.TitleSizes.H3}>Mapped Configurations by Confidence Rating</Title>
 
-        {/* Resource Mapping Cards */}
-        <StackingLayout itemGap="none">
-          {mappings.length === 0 ? (
-            <ContainerLayout
-              border
-              padding="40px"
-              style={{ textAlign: 'center' }}
-            >
-              <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>
-                No resources found matching your filters.
-              </TextLabel>
-            </ContainerLayout>
-          ) : (
-            mappings.map((mapping) => renderMapping(mapping, mappingHandlers))
-          )}
+                {/* Filter Bar with Confidence Tabs */}
+                <FilterBar
+                  searchQuery={filter.searchQuery}
+                  activeConfidenceTab={filter.confidenceTabFilter}
+                  onSearchChange={setSearchQuery}
+                  onConfidenceTabChange={setConfidenceTabFilter}
+                />
+
+                {/* Column Headers */}
+                <ColumnHeaders />
+
+                {/* Resource Mapping Cards */}
+                <StackingLayout itemGap="none">
+                  {mappings.length === 0 ? (
+                    <ContainerLayout
+                      border
+                      padding="40px"
+                      style={{ textAlign: 'center' }}
+                    >
+                      <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>
+                        No resources found matching your filters.
+                      </TextLabel>
+                    </ContainerLayout>
+                  ) : (
+                    mappings.map((mapping) => renderMapping(mapping, mappingHandlers))
+                  )}
+                </StackingLayout>
+
+                {/* Summary Footer */}
+                <FlexLayout justifyContent="flex-start" alignItems="center" style={{ marginTop: '20px' }}>
+                  {/* Approved Mappings Card */}
+                  <ContainerLayout
+                    border
+                    padding="15px"
+                    style={{
+                      background: 'var(--color-background-base)',
+                      display: 'inline-block',
+                    }}
+                  >
+                  </ContainerLayout>
+                </FlexLayout>
+              </StackingLayout>
+            </StackingLayout>
+          </ContainerLayout>
         </StackingLayout>
+      </ContainerLayout>
 
-        {/* Summary Footer */}
-        <FlexLayout justifyContent="space-between" alignItems="center">
-          <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>
-            Showing {mappings.length} of {stats.totalResources} resources
+      {/* <NeedHelpBox /> */}
+
+      {/* Step Footer */}
+      <StepFooter
+        currentStep={currentStep}
+        totalSteps={CONNECTION_STEPS.length}
+        nextLabel="Check Security Issues"
+        onNext={handleCompleteReview}
+        onBack={handleBack}
+        extraContent={<FlexLayout alignItems="center" itemGap="M">
+          <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
+            Approved Mappings
           </TextLabel>
-          <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>
-            Session ID: {sessionId}
-          </TextLabel>
+          <Title size={Title.TitleSizes.H3}>
+            {stats.approvedCount} of {stats.totalResources}
+          </Title>
         </FlexLayout>
-      </StackingLayout>
-    </ContainerLayout>
+        }
+      />
+    </FlexLayout>
   );
 }

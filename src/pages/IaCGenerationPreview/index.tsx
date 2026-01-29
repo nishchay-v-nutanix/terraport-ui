@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import {
   ContainerLayout,
   FlexLayout,
@@ -9,6 +9,10 @@ import {
   Button,
   CloudIcon,
   Alert,
+  TextLabel,
+  Progress,
+  QuestionIcon,
+  ChevronRightIcon,
 } from '@nutanix-ui/prism-reactjs';
 
 import {
@@ -18,13 +22,124 @@ import {
 } from './types';
 import { MOCK_TERRAFORM_FILES, DEFAULT_EDITOR_STATUS } from './constants';
 import { MainContentArea } from './styles';
+import { CONNECTION_STEPS } from '../ConnectAWS/types';
+import StepFooter, { STEP_FOOTER_HEIGHT } from '../../components/StepFooter';
 
 // Components
 import FileExplorer from './components/FileExplorer';
 import EditorPanel from './components/EditorPanel';
 
+// Title Bar Component - persists across all wizard steps
+interface TitleBarProps {
+  title: string;
+}
+
+const TitleBar: React.FC<TitleBarProps> = ({ title }) => (
+  <ContainerLayout
+    padding="20px"
+    style={{
+      paddingLeft: '40px',
+      paddingRight: '40px',
+      borderBottom: '1px solid var(--color-border-separator)',
+      background: 'var(--color-background-base)',
+    }}
+  >
+    <Title size={Title.TitleSizes.H2}>{title}</Title>
+  </ContainerLayout>
+);
+
+// Wizard Progress Component - persists across all wizard steps
+interface WizardProgressProps {
+  currentStep: number;
+  totalSteps: number;
+  stepTitle: string;
+  description: string;
+}
+
+const WizardProgress: React.FC<WizardProgressProps> = ({
+  currentStep,
+  totalSteps,
+  stepTitle,
+  description,
+}) => {
+  const progressPercent = (currentStep / totalSteps) * 100;
+
+  return (
+    <StackingLayout itemGap="M" padding="0px">
+      <FlexLayout alignItems="center" justifyContent="space-between">
+        <StackingLayout itemGap="S">
+          <TextLabel
+            type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
+            size={TextLabel.TEXT_LABEL_SIZE.SMALL}
+            style={{
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              color: 'var(--color-text-link)',
+              fontWeight: 600,
+            }}
+          >
+            STEP {currentStep} OF {totalSteps}
+          </TextLabel>
+          <Title size={Title.TitleSizes.H3}>{stepTitle}</Title>
+        </StackingLayout>
+        <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>
+          {progressPercent}% Completed
+        </TextLabel>
+      </FlexLayout>
+      <Progress
+        percent={progressPercent}
+        status={Progress.ProgressStatus.ACTIVE}
+        label={false}
+      />
+      <Paragraph type="secondary" forceMultiLineHeight>
+        {description}
+      </Paragraph>
+    </StackingLayout>
+  );
+};
+
+// Need Help Component - positioned above the footer
+const NeedHelpBox: React.FC = () => (
+  <ContainerLayout
+    border
+    padding="15px"
+    style={{
+      cursor: 'pointer',
+      position: 'fixed',
+      bottom: '84px',
+      right: '24px',
+      width: '280px',
+      background: 'var(--color-background-base)',
+      zIndex: 100,
+    }}
+  >
+    <FlexLayout alignItems="center" justifyContent="space-between">
+      <FlexLayout alignItems="center" itemGap="S">
+        <QuestionIcon color="var(--color-text-secondary-label)" />
+        <StackingLayout itemGap="S">
+          <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
+            Need help?
+          </TextLabel>
+          <TextLabel
+            type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
+            size={TextLabel.TEXT_LABEL_SIZE.SMALL}
+          >
+            Contact Support
+          </TextLabel>
+        </StackingLayout>
+      </FlexLayout>
+      <ChevronRightIcon color="var(--color-text-secondary-label)" />
+    </FlexLayout>
+  </ContainerLayout>
+);
+
 export default function IaCGenerationPreview(): React.ReactElement {
   const { sessionId } = useParams<RouteParams>();
+  const history = useHistory();
+
+  // Step 5 data
+  const currentStep = 5;
+  const currentStepData = CONNECTION_STEPS[currentStep - 1];
 
   // State
   const [state, setState] = useState<IaCPreviewState>(() => {
@@ -203,9 +318,17 @@ export default function IaCGenerationPreview(): React.ReactElement {
       setSuccessMessage(
         'Successfully exported to Nutanix Cloud Manager! You can now apply this configuration in NCM.'
       );
-      setTimeout(() => setSuccessMessage(null), 5000);
+      // Navigate to Landing page with filled state after export
+      setTimeout(() => {
+        history.push('/?demo=true');
+      }, 1500);
     }, 2000);
-  }, []);
+  }, [history]);
+
+  // Handle back navigation
+  const handleBack = useCallback(() => {
+    history.push(`/translation/${sessionId}`);
+  }, [history, sessionId]);
 
   // Handle escape key for fullscreen
   useEffect(() => {
@@ -220,78 +343,124 @@ export default function IaCGenerationPreview(): React.ReactElement {
   }, [state.isFullscreen]);
 
   return (
-    <ContainerLayout padding="40px">
-      <StackingLayout itemGap="L">
-        {/* Success Message */}
-        {successMessage && (
-          <Alert
-            type={Alert.AlertTypes.SUCCESS}
-            message={successMessage}
-            showCloseIcon
-            onClose={() => setSuccessMessage(null)}
+    <FlexLayout flexDirection="column" style={{ minHeight: '100vh', width: '100%', paddingBottom: `${STEP_FOOTER_HEIGHT}px` }}>
+      {/* Title Bar - persists across all wizard steps */}
+      <TitleBar title="Migrate AWS Environment" />
+
+      {/* Main Content Area */}
+      <ContainerLayout padding="40px" style={{ flex: 1 }}>
+        <StackingLayout style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          {/* Wizard Progress - persists across all wizard steps */}
+          <WizardProgress
+            currentStep={currentStep}
+            totalSteps={CONNECTION_STEPS.length}
+            stepTitle={currentStepData.title}
+            description={currentStepData.description}
           />
-        )}
 
-        {/* Header */}
-        <FlexLayout justifyContent="space-between" alignItems="flex-start">
-          <StackingLayout itemGap="XS">
-            <Title size={Title.TitleSizes.H1}>IaC Generation Preview</Title>
-            <Paragraph type="secondary" forceMultiLineHeight>
-              Review the translated Terraform configuration before pushing to
-              Nutanix Cloud Manager. Session: {sessionId}
-            </Paragraph>
-          </StackingLayout>
-          <Button
-            type={Button.ButtonTypes.PRIMARY}
-            onClick={handleExport}
-            disabled={state.isExporting}
-          >
-            <FlexLayout alignItems="center" itemGap="XS" padding="0px-10px">
-              <CloudIcon style={{ width: '16px', height: '16px' }} />
-              {state.isExporting ? 'Exporting...' : 'Export to Nutanix Cloud Manager'}
-            </FlexLayout>
-          </Button>
-        </FlexLayout>
+          {/* Main Content Container */}
+          <ContainerLayout border padding="30px" style={{ marginTop: '20px' }}>
+            <StackingLayout itemGap="L">
+              {/* Success Message */}
+              {successMessage && (
+                <Alert
+                  type={Alert.AlertTypes.SUCCESS}
+                  message={successMessage}
+                  showCloseIcon
+                  onClose={() => setSuccessMessage(null)}
+                />
+              )}
 
-        {/* Main Content: Explorer + Editor */}
-        {!state.isFullscreen && (
-          <MainContentArea>
-            <FileExplorer
-              files={state.files}
-              activeFileId={state.activeFileId}
-              onFileSelect={handleFileSelect}
-            />
-            <EditorPanel
-              activeFile={activeFile}
-              tabs={state.openTabs}
-              status={state.editorStatus}
-              isFullscreen={state.isFullscreen}
-              onTabClick={handleTabClick}
-              onCloseTab={handleCloseTab}
-              onCopy={handleCopy}
-              onDownload={handleDownload}
-              onFullscreenToggle={handleFullscreenToggle}
-              onCursorPositionChange={handleCursorPositionChange}
-            />
-          </MainContentArea>
-        )}
+              {/* Header */}
+              <FlexLayout justifyContent="space-between" alignItems="flex-start">
+                <StackingLayout itemGap="XS">
+                  <Title size={Title.TitleSizes.H3}>Generated Terraform Configuration</Title>
+                  <Paragraph type="secondary" forceMultiLineHeight>
+                    Review the translated Terraform configuration before pushing to
+                    Nutanix Cloud Manager. Session: {sessionId}
+                  </Paragraph>
+                </StackingLayout>
+              </FlexLayout>
 
-        {/* Fullscreen mode renders editor outside of normal flow */}
-        {state.isFullscreen && (
-          <EditorPanel
-            activeFile={activeFile}
-            tabs={state.openTabs}
-            status={state.editorStatus}
-            isFullscreen={state.isFullscreen}
-            onTabClick={handleTabClick}
-            onCloseTab={handleCloseTab}
-            onCopy={handleCopy}
-            onDownload={handleDownload}
-            onFullscreenToggle={handleFullscreenToggle}
-            onCursorPositionChange={handleCursorPositionChange}
-          />
-        )}
-      </StackingLayout>
-    </ContainerLayout>
+              {/* Main Content: Explorer + Editor */}
+              {!state.isFullscreen && (
+                <MainContentArea>
+                  <FileExplorer
+                    files={state.files}
+                    activeFileId={state.activeFileId}
+                    onFileSelect={handleFileSelect}
+                  />
+                  <EditorPanel
+                    activeFile={activeFile}
+                    tabs={state.openTabs}
+                    status={state.editorStatus}
+                    isFullscreen={state.isFullscreen}
+                    onTabClick={handleTabClick}
+                    onCloseTab={handleCloseTab}
+                    onCopy={handleCopy}
+                    onDownload={handleDownload}
+                    onFullscreenToggle={handleFullscreenToggle}
+                    onCursorPositionChange={handleCursorPositionChange}
+                  />
+                </MainContentArea>
+              )}
+
+              {/* Fullscreen mode renders editor outside of normal flow */}
+              {state.isFullscreen && (
+                <EditorPanel
+                  activeFile={activeFile}
+                  tabs={state.openTabs}
+                  status={state.editorStatus}
+                  isFullscreen={state.isFullscreen}
+                  onTabClick={handleTabClick}
+                  onCloseTab={handleCloseTab}
+                  onCopy={handleCopy}
+                  onDownload={handleDownload}
+                  onFullscreenToggle={handleFullscreenToggle}
+                  onCursorPositionChange={handleCursorPositionChange}
+                />
+              )}
+
+              {/* Inline Actions */}
+              <FlexLayout
+                justifyContent="flex-start"
+                alignItems="center"
+                itemGap="S"
+                style={{ marginTop: '20px' }}
+              >
+                <Button
+                  type={Button.ButtonTypes.SECONDARY}
+                  onClick={handleCopy}
+                  disabled={!activeFile}
+                >
+                  Copy to Clipboard
+                </Button>
+                <Button
+                  type={Button.ButtonTypes.SECONDARY}
+                  onClick={handleDownload}
+                  disabled={!activeFile}
+                >
+                  Download File
+                </Button>
+              </FlexLayout>
+            </StackingLayout>
+          </ContainerLayout>
+        </StackingLayout>
+      </ContainerLayout>
+
+      {/* Need Help Box - fixed at bottom right */}
+      <NeedHelpBox />
+
+      {/* Step Footer */}
+      <StepFooter
+        currentStep={currentStep}
+        totalSteps={CONNECTION_STEPS.length}
+        nextLabel={state.isExporting ? 'Exporting...' : 'Export to NCM'}
+        onNext={handleExport}
+        onBack={handleBack}
+        isNextDisabled={state.isExporting}
+        nextIcon={<CloudIcon style={{ width: '16px', height: '16px' }} />}
+      />
+    </FlexLayout>
   );
 }

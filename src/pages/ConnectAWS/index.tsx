@@ -9,27 +9,23 @@ import {
   TextLabel,
   Input,
   Select,
-  Link,
   Progress,
   ContainerLayout,
   // Prism Icons
   LockIcon,
-  SecureIcon,
   RefreshIcon,
   QuestionIcon,
   ShowIcon,
   HideIcon,
   ChevronRightIcon,
-  SuccessStatusIcon,
-  InformationStatusIcon,
 } from '@nutanix-ui/prism-reactjs';
 
 import {
   AWSCredentials,
   CONNECTION_STEPS,
   AWS_REGIONS,
-  REQUIRED_PERMISSIONS,
 } from './types';
+import StepFooter, { STEP_FOOTER_HEIGHT } from '../../components/StepFooter';
 
 // Select row data interface matching Prism Select component
 interface SelectRowData {
@@ -37,6 +33,110 @@ interface SelectRowData {
   label: string;
   disabled?: boolean;
 }
+
+// Title Bar Component - persists across all wizard steps
+interface TitleBarProps {
+  title: string;
+}
+
+const TitleBar: React.FC<TitleBarProps> = ({ title }) => (
+  <ContainerLayout
+    padding="20px"
+    style={{
+      paddingLeft: '40px',
+      paddingRight: '40px',
+      borderBottom: '1px solid var(--color-border-separator)',
+      background: 'var(--color-background-base)',
+    }}
+  >
+    <Title size={Title.TitleSizes.H2}>{title}</Title>
+  </ContainerLayout>
+);
+
+// Wizard Progress Component - persists across all wizard steps
+interface WizardProgressProps {
+  currentStep: number;
+  totalSteps: number;
+  stepTitle: string;
+  description: string;
+}
+
+const WizardProgress: React.FC<WizardProgressProps> = ({
+  currentStep,
+  totalSteps,
+  stepTitle,
+  description,
+}) => {
+  const progressPercent = (currentStep / totalSteps) * 100;
+
+  return (
+    <StackingLayout itemGap="M" padding="0px">
+      <FlexLayout alignItems="center" justifyContent="space-between">
+        <StackingLayout itemGap="S">
+          <TextLabel
+            type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
+            size={TextLabel.TEXT_LABEL_SIZE.SMALL}
+            style={{
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              color: 'var(--color-text-link)',
+              fontWeight: 600,
+            }}
+          >
+            STEP {currentStep} OF {totalSteps}
+          </TextLabel>
+          <Title size={Title.TitleSizes.H3}>{stepTitle}</Title>
+        </StackingLayout>
+        <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>
+          {progressPercent}% Completed
+        </TextLabel>
+      </FlexLayout>
+      <Progress
+        percent={progressPercent}
+        status={Progress.ProgressStatus.ACTIVE}
+        label={false}
+      />
+      <Paragraph type="secondary" forceMultiLineHeight>
+        {description}
+      </Paragraph>
+    </StackingLayout>
+  );
+};
+
+// Need Help Component - positioned above the footer
+const NeedHelpBox: React.FC = () => (
+  <ContainerLayout
+    border
+    padding="15px"
+    style={{
+      cursor: 'pointer',
+      position: 'fixed',
+      bottom: '84px',
+      right: '16px',
+      width: '280px',
+      background: 'var(--color-background-base)',
+      zIndex: 100,
+    }}
+  >
+    <FlexLayout alignItems="center" justifyContent="space-between">
+      <FlexLayout alignItems="center" itemGap="S">
+        <QuestionIcon color="var(--color-text-secondary-label)" />
+        <StackingLayout itemGap="S">
+          <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
+            Need help?
+          </TextLabel>
+          <TextLabel
+            type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
+            size={TextLabel.TEXT_LABEL_SIZE.SMALL}
+          >
+            Contact Support
+          </TextLabel>
+        </StackingLayout>
+      </FlexLayout>
+      <ChevronRightIcon color="var(--color-text-secondary-label)" />
+    </FlexLayout>
+  </ContainerLayout>
+);
 
 export default function ConnectAWS(): React.ReactElement {
   const history = useHistory();
@@ -51,7 +151,6 @@ export default function ConnectAWS(): React.ReactElement {
   const [currentStep] = useState(1);
   const [isTestingConnection, setIsTestingConnection] = useState(false);
 
-  const progressPercent = (currentStep / CONNECTION_STEPS.length) * 100;
   const currentStepData = CONNECTION_STEPS[currentStep - 1];
 
   const handleInputChange = (field: keyof AWSCredentials) => (
@@ -96,46 +195,6 @@ export default function ConnectAWS(): React.ReactElement {
     history.push(`/scan/${scanId}`);
   };
 
-  const renderHeader = () => (
-    <StackingLayout itemGap="S">
-      <Title size={Title.TitleSizes.H1}>Connect AWS Environment</Title>
-      <Paragraph type="secondary" forceMultiLineHeight>
-        Enter your IAM credentials to allow Terraport to discover your AWS
-        infrastructure.
-      </Paragraph>
-    </StackingLayout>
-  );
-
-  const renderProgressSection = () => (
-    <StackingLayout itemGap="S" padding="20px-0px">
-      <FlexLayout alignItems="center" justifyContent="space-between">
-        <StackingLayout itemGap="S">
-          <TextLabel
-            type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
-            size={TextLabel.TEXT_LABEL_SIZE.SMALL}
-            style={{
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              color: 'var(--color-text-link)',
-              fontWeight: 600,
-            }}
-          >
-            STEP {currentStep} OF {CONNECTION_STEPS.length}
-          </TextLabel>
-          <Title size={Title.TitleSizes.H3}>{currentStepData.title}</Title>
-        </StackingLayout>
-        <TextLabel type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}>
-          {progressPercent}% Completed
-        </TextLabel>
-      </FlexLayout>
-      <Progress
-        percent={progressPercent}
-        status={Progress.ProgressStatus.ACTIVE}
-        label={false}
-      />
-    </StackingLayout>
-  );
-
   const renderCredentialsForm = () => (
     <ContainerLayout border padding="30px" style={{ marginTop: '20px' }}>
       <StackingLayout itemGap="L">
@@ -154,7 +213,7 @@ export default function ConnectAWS(): React.ReactElement {
               type={showAccessKey ? 'text' : 'password'}
               value={credentials.accessKeyId}
               onChange={handleInputChange('accessKeyId')}
-              placeholder="AKIAIOSFODNN7EXAMPLE"
+              placeholder="Your Access Key ID"
               style={{ paddingRight: '40px' }}
             />
             <Button
@@ -231,10 +290,10 @@ export default function ConnectAWS(): React.ReactElement {
           </StackingLayout>
         </FlexLayout>
 
-        {/* Action Buttons */}
+        {/* Test Connection Button */}
         <FlexLayout
           alignItems="center"
-          justifyContent="space-between"
+          justifyContent="flex-start"
           itemGap="M"
           style={{
             marginTop: '20px',
@@ -252,103 +311,47 @@ export default function ConnectAWS(): React.ReactElement {
               {isTestingConnection ? 'Testing...' : 'Test Connection'}
             </FlexLayout>
           </Button>
-          <Button
-            type={Button.ButtonTypes.PRIMARY}
-            onClick={handleSaveAndContinue}
-          >
-            <FlexLayout alignItems="center" itemGap="XS" padding="0px-10px">
-              Start Scan
-              <ChevronRightIcon />
-            </FlexLayout>
-          </Button>
         </FlexLayout>
       </StackingLayout>
     </ContainerLayout>
   );
 
-  const renderSidebar = () => (
-    <StackingLayout itemGap="M" style={{ width: '360px', flexShrink: 0 }}>
-      {/* Permissions Required Card */}
-      <ContainerLayout border padding="20px">
-        <StackingLayout itemGap="M">
-          <FlexLayout alignItems="center" itemGap="S">
-            <InformationStatusIcon color="var(--color-text-success)" />
-            <Title size={Title.TitleSizes.H4}>Permissions Required</Title>
-          </FlexLayout>
-          <Paragraph type="secondary" forceMultiLineHeight>
-            To successfully discover your infrastructure, the IAM user must have
-            the following read-only permissions:
-          </Paragraph>
-          <StackingLayout itemGap="S">
-            {REQUIRED_PERMISSIONS.map((permission) => (
-              <FlexLayout key={permission} alignItems="center" itemGap="S">
-                <SuccessStatusIcon
-                  color="var(--color-text-success)"
-                  iconColor="var(--color-background-base)"
-                />
-                <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
-                  {permission}
-                </TextLabel>
-              </FlexLayout>
-            ))}
-          </StackingLayout>
-          <Link type="forward" href="#policy">
-            View Full IAM Policy
-          </Link>
-        </StackingLayout>
-      </ContainerLayout>
-
-      {/* End-to-End Encryption Card */}
-      <ContainerLayout border padding="20px">
-        <StackingLayout itemGap="S">
-          <FlexLayout alignItems="center" itemGap="S">
-            <SecureIcon color="var(--color-text-success)" />
-            <Title size={Title.TitleSizes.H4}>End-to-End Encryption</Title>
-          </FlexLayout>
-          <Paragraph type="secondary" forceMultiLineHeight>
-            Your keys are encrypted using AES-256 before transmission and are
-            never stored in plain text.
-          </Paragraph>
-        </StackingLayout>
-      </ContainerLayout>
-
-      {/* Need Help Card */}
-      <ContainerLayout
-        border
-        padding="15px"
-        style={{ cursor: 'pointer' }}
-      >
-        <FlexLayout alignItems="center" justifyContent="space-between">
-          <FlexLayout alignItems="center" itemGap="S">
-            <QuestionIcon color="var(--color-text-secondary-label)" />
-            <StackingLayout itemGap="S">
-              <TextLabel type={TextLabel.TEXT_LABEL_TYPE.PRIMARY}>
-                Need help?
-              </TextLabel>
-              <TextLabel
-                type={TextLabel.TEXT_LABEL_TYPE.SECONDARY}
-                size={TextLabel.TEXT_LABEL_SIZE.SMALL}
-              >
-                Contact Support
-              </TextLabel>
-            </StackingLayout>
-          </FlexLayout>
-          <ChevronRightIcon color="var(--color-text-secondary-label)" />
-        </FlexLayout>
-      </ContainerLayout>
-    </StackingLayout>
-  );
+  const handleBack = () => {
+    history.push('/');
+  };
 
   return (
-    <ContainerLayout padding="40px">
-      <FlexLayout itemGap="XL" justifyContent="space-between">
-        <StackingLayout style={{ flex: 1, maxWidth: '960px' }}>
-          {renderHeader()}
-          {renderProgressSection()}
+    <FlexLayout flexDirection="column" style={{ minHeight: '100vh', width: '100%', paddingBottom: `${STEP_FOOTER_HEIGHT}px` }}>
+      {/* Title Bar - persists across all wizard steps */}
+      <TitleBar title="Migrate AWS Environment" />
+
+      {/* Main Content Area */}
+      <ContainerLayout padding="40px" style={{ flex: 1 }}>
+        <StackingLayout style={{ maxWidth: '800px', margin: '0 auto' }}>
+          {/* Wizard Progress - persists across all wizard steps */}
+          <WizardProgress
+            currentStep={currentStep}
+            totalSteps={CONNECTION_STEPS.length}
+            stepTitle={currentStepData.title}
+            description={currentStepData.description}
+          />
+
+          {/* Step Content - changes per step */}
           {renderCredentialsForm()}
         </StackingLayout>
-        {renderSidebar()}
-      </FlexLayout>
-    </ContainerLayout>
+      </ContainerLayout>
+
+      {/* Need Help Box - fixed at bottom right */}
+      <NeedHelpBox />
+
+      {/* Step Footer */}
+      <StepFooter
+        currentStep={currentStep}
+        totalSteps={CONNECTION_STEPS.length}
+        nextLabel="Start Scan"
+        onNext={handleSaveAndContinue}
+        onBack={handleBack}
+      />
+    </FlexLayout>
   );
 }

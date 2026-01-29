@@ -12,10 +12,11 @@ export interface ConnectionStep {
 }
 
 export const CONNECTION_STEPS: ConnectionStep[] = [
-  { id: 1, title: 'Connection & Discovery', description: 'Enter your IAM credentials' },
-  { id: 2, title: 'Resource Selection', description: 'Choose resources to migrate' },
-  { id: 3, title: 'Translation Config', description: 'Configure translation settings' },
-  { id: 4, title: 'Review & Deploy', description: 'Review and initiate migration' },
+  { id: 1, title: 'Connect to AWS', description: 'Enter your IAM credentials to allow Terraport to discover your AWS infrastructure.' },
+  { id: 2, title: 'Scan AWS Resources', description: 'Terraport scans your AWS environment to discover all resources, their configurations, and dependencies. This automated discovery ensures nothing is missed during migration.' },
+  { id: 3, title: 'Review Resource Mappings', description: 'Review and refine the AI-suggested mappings between your AWS resources and Nutanix configurations. Mapping is optional—you can proceed with unmapped resources, but they will require manual configuration after migration. Resources with higher confidence scores are more likely to translate correctly.' },
+  { id: 4, title: 'View Security Issues', description: 'Review security vulnerabilities and compliance issues detected in your AWS resources. Address critical security findings before migration to ensure a secure Nutanix deployment.' },
+  { id: 5, title: 'Review & Deploy', description: 'Review and initiate migration' },
 ];
 
 export const AWS_REGIONS = [

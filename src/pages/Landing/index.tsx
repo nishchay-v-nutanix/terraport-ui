@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Button,
   FlexLayout,
@@ -12,6 +13,7 @@ import {
   PlusIcon,
 } from '@nutanix-ui/prism-reactjs';
 
+// import { ReactComponent as MyLogo } from './logo.svg';
 import {
   Environment,
   MOCK_ENVIRONMENTS,
@@ -25,9 +27,20 @@ import {
   AddEnvironmentCard,
 } from './styles';
 import history from '../../routes/history';
+import StepFooter, { STEP_FOOTER_HEIGHT } from '../../components/StepFooter';
+import { CONNECTION_STEPS } from '../ConnectAWS/types';
 
 export default function Landing(): React.ReactElement {
+  const location = useLocation();
   const [environments, setEnvironments] = useState<Environment[]>([]);
+
+  // Check for demo mode in URL query params (after completing migration flow)
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get('demo') === 'true') {
+      setEnvironments(MOCK_ENVIRONMENTS);
+    }
+  }, [location.search]);
 
   const hasEnvironments = environments.length > 0;
 
@@ -69,7 +82,7 @@ export default function Landing(): React.ReactElement {
             style={{ width: '100%' }}
           />
         </FlexLayout>
-        <FlexLayout alignItems="center" itemGap="M">
+        {/* <FlexLayout alignItems="center" itemGap="M">
           <Button
             type={Button.ButtonTypes.PRIMARY}
             onClick={hasEnvironments ? handleCreateMigration : toggleDemoMode}
@@ -79,26 +92,35 @@ export default function Landing(): React.ReactElement {
               Create New Migration
             </FlexLayout>
           </Button>
-        </FlexLayout>
+        </FlexLayout> */}
       </FlexLayout>
     </ContainerLayout>
   );
 
   if (!hasEnvironments) {
     return (
-      <FlexLayout flexDirection="column" style={{ minHeight: '100%', width: '100%' }}>
+      <FlexLayout flexDirection="column" style={{ minHeight: '100%', width: '100%', paddingBottom: `${STEP_FOOTER_HEIGHT}px` }}>
+        {renderHeader()}
+        {/* <MyLogo width="100px" height="100px" /> */}
         <ContainerLayout padding="40px">
           <EmptyState
             onCreateMigration={handleCreateMigration}
             onConnectProvider={handleConnectProvider}
           />
         </ContainerLayout>
+        <StepFooter
+          currentStep={1}
+          totalSteps={CONNECTION_STEPS.length}
+          nextLabel="Start Migration"
+          onNext={handleCreateMigration}
+          showBack={false}
+        />
       </FlexLayout>
     );
   }
 
   return (
-    <FlexLayout flexDirection="column" style={{ minHeight: '100%', width: '100%' }}>
+    <FlexLayout flexDirection="column" style={{ minHeight: '100%', width: '100%', paddingBottom: `${STEP_FOOTER_HEIGHT}px` }}>
       {renderHeader()}
       <ContainerLayout padding="40px">
         <StackingLayout itemGap="XL">
@@ -109,7 +131,6 @@ export default function Landing(): React.ReactElement {
               Real-time insight into your infrastructure translation pipelines.
             </Paragraph>
           </StackingLayout>
-
           <StatsOverview stats={MOCK_STATS} />
 
           {/* Environments Section */}
@@ -140,14 +161,21 @@ export default function Landing(): React.ReactElement {
           </EnvironmentsGrid>
 
           {/* Demo toggle button */}
-          <Button
+          {/* <Button
             type={Button.ButtonTypes.SECONDARY}
             onClick={toggleDemoMode}
           >
             Toggle Empty State (Demo)
-          </Button>
+          </Button> */}
         </StackingLayout>
       </ContainerLayout>
+      <StepFooter
+        currentStep={1}
+        totalSteps={CONNECTION_STEPS.length}
+        nextLabel="Start Migration"
+        onNext={handleCreateMigration}
+        showBack={false}
+      />
     </FlexLayout>
   );
 }

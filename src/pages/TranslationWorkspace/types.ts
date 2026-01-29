@@ -145,16 +145,19 @@ export interface TranslationStats {
   totalResources: number;
   needsReview: number;
   readyToCommit: number;
+  approvedCount: number;
 }
 
-// Filter state
+// Filter state - now based on confidence levels
 export type ResourceFilterType = 'all' | 'vpc' | 'subnet' | 'security_group' | 'ec2' | 'ebs';
+export type ConfidenceFilterType = 'all' | 'high' | 'medium' | 'low' | 'unmapped';
 
 export interface FilterState {
   type: ResourceFilterType;
   searchQuery: string;
   showOnlyNeedsReview: boolean;
   confidenceFilter: ConfidenceLevel | 'all';
+  confidenceTabFilter: ConfidenceFilterType;
 }
 
 // Page state
