@@ -6,6 +6,7 @@ export const PageContainer = styled.div`
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
+  overflow: auto;
 `;
 
 export const EnvironmentsGrid = styled.div`
@@ -30,11 +31,11 @@ export const AddEnvironmentCard = styled.div`
   justify-content: center;
   padding: 40px 20px;
   background: var(--color-background-alt);
-  border: 2px dashed var(--color-border-default);
+  border: 1px solid var(--color-border-separator);
   border-radius: var(--border-radius-m);
   cursor: pointer;
   transition: all 0.2s ease;
-  min-height: 280px;
+  min-height: 240px;
 
   &:hover {
     border-color: var(--color-border-hover);

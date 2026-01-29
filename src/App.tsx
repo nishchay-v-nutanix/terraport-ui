@@ -19,7 +19,7 @@ export default function App(): React.ReactElement {
         };
       }}
     >
-      <FlexLayout background='alt' style={{ height: '100vh', width: '100vw' }}>
+      <FlexLayout background='alt' style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
         <Landing />
       </FlexLayout>
     </ThemeWrapper>

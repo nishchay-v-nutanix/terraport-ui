@@ -68,7 +68,7 @@ export default function Landing(): React.ReactElement {
             type={Button.ButtonTypes.PRIMARY}
             onClick={hasEnvironments ? handleCreateMigration : toggleDemoMode}
           >
-            <FlexLayout alignItems="center" itemGap="XS">
+            <FlexLayout alignItems="center" itemGap="XS" padding="0px-15px">
               <span>+</span>
               Create New Migration
             </FlexLayout>
